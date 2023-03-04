@@ -8,15 +8,15 @@ import { Autogrid } from './autogrid';
 import { IDatagridField } from './datagrid';
 import { useObservable, useSubscription } from './kore-hooks';
 
-interface IProps {
-  collection: Collection<any>
-  columns?: IDatagridField<any>[]
-  onGoto?: boolean | ((doc: IDoc<any>) => any)
-  data?: ObservableArray<IDoc<any>>
+interface IProps<T> {
+  collection: Collection<T>
+  columns?: IDatagridField<T>[]
+  onGoto?: boolean | ((doc: IDoc<T>) => any)
+  data?: ObservableArray<IDoc<T>>
   defaultSort?: string
   changesExist?: Subscribable<boolean>
   filters?: (string[] | JSX.Element[])
-  newRow?: boolean | (() => IDoc<any>)
+  newRow?: boolean | (() => IDoc<T>)
   readOnly?: boolean
   title?: string
   hideSearch?: boolean
@@ -27,7 +27,7 @@ export let DefaultGoTo = (path: string) => {
   throw new Error('You must set `DefaultGoTo` or pass one in via props');
 } 
 
-export const AutoscreenGrid = (props: IProps) => {
+export function AutoscreenGrid<T>(props: IProps<T>) {
   const changesExist = props.changesExist || useState(() => observable(false))[0];
   const { collection } = props;
   const [data] = useState(() => props.data || collection.observables.list());
