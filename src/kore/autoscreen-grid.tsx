@@ -17,7 +17,7 @@ interface IProps {
   changesExist?: Subscribable<boolean>
   filters?: (string[] | JSX.Element[])
   newRow?: boolean | (() => IDoc<any>)
-  editable?: boolean
+  readOnly?: boolean
   title?: string
   hideSearch?: boolean
   showDelete?: boolean
@@ -95,12 +95,12 @@ export const AutoscreenGrid = (props: IProps) => {
     )
   }
 
-  const showDelete = typeof props.showDelete === 'boolean' ? props.showDelete : props.editable !== false;
+  const showDelete = typeof props.showDelete === 'boolean' ? props.showDelete : props.readOnly !== false;
 
   return (
     <div className='container-fluid'>
       <span className='float-end'>
-        {props.editable !== false && <SaveButton changesExist={changesExist} saveChanges={saveChanges} />}
+        {!props.readOnly && <SaveButton changesExist={changesExist} saveChanges={saveChanges} />}
         {error && (
           <span className='clearfix text-danger text-wrap' style={{ width: '100px' }}>
             <br />
@@ -124,7 +124,7 @@ export const AutoscreenGrid = (props: IProps) => {
         columns={props.columns}
         data={data}
         defaultSort={props.defaultSort ?? 'id'}
-        editable={props.editable !== false}
+        editable={props.readOnly !== false}
         showSave={false}
         showDelete={showDelete}
         onDelete={doc => {

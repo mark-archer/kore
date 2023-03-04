@@ -1,12 +1,13 @@
 {
   "name": "peers-kore",
   "version": "0.0.2",
-  "main": "index.js",
+  "main": "index.ts",
+  "types": "dist/index.d.ts",
   "repository": "https://github.com/mark-archer/kore",
   "author": "Mark Archer <mark_archer@live.com>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && rm -rf ./dist",
     "test": "jest --coverage --no-cache",
     "deploy": "yarn build; npm version patch; npm publish ."
   },

@@ -46,7 +46,7 @@ export interface IDataSource<T> {
 	remove(data: T): Promise<boolean>
 }
 
-export const Collections: Collection<any>[] = [];
+export const collections: Collection<any>[] = [];
 
 export class Collection<T> {
 
@@ -56,11 +56,11 @@ export class Collection<T> {
 
 	constructor(
 		readonly entity: IEntity,
-		rtype: RObject<any, false>,
-		readonly primaryKey: IField,
+		rtype: any,
 		private dataSource: IDataSource<T>,
+		readonly primaryKey: IField = { name: "id", dataType: "string" },
 	) {
-		Collections.push(this);
+		collections.push(this);
 		this.rtype = rtype;
 		this.entityName = entity.name;
 		let _entity = entity;
@@ -74,7 +74,7 @@ export class Collection<T> {
 		}
 		for (const column of this.fields) {
 			if (column.fkType) {
-				column.fkCollection = Collections.find(c => c.entity.name === column.fkCollection.entityName)
+				column.fkCollection = collections.find(c => c.entity.name === column.fkCollection.entityName)
 				// column.fkCollection = require('./orm-types')[column.fkType.namePlural];
 			}
 		}

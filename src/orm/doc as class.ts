@@ -32,16 +32,16 @@
 
 // 	private rtype: RObject<any, false>; 
 // 	private columns: IField[];
-// 	public readonly q = observable(0);
-// 	public readonly qs: {
+// 	public readOnly q = observable(0);
+// 	public readOnly qs: {
 // 		[K in keyof T]-?: Observable<T[K]>
 // 	} = {} as any;
 
-// 	public readonly validationError = observable(null);
+// 	public readOnly validationError = observable(null);
 // 	public isNew = true;
 
 // 	constructor(
-// 		readonly collection: Collection<T>,
+// 		readOnly collection: Collection<T>,
 // 		data = {}
 // 	) {
 // 			this.rtype = (collection.rtype as any) as RObject<any, false>;

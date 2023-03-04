@@ -1,5 +1,5 @@
 import React from 'react'; 
-import { useObservable } from '../kore/kore-hooks';
+import { useObservable } from './kore-hooks';
 
 interface IProps extends React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {
   value: any

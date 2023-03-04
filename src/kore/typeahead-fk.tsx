@@ -7,27 +7,27 @@ import { useObservable } from './kore-hooks';
 import { camelCaseToSpaces } from '../utils';
 import { IDatagridColumn } from './datagrid';
 
-interface IProps {
-  fkCollection: Collection<any>
+interface IProps<T>{
+  fkCollection: Collection<T>
   fkId: Observable<string>
-  options?: ObservableArray<IDoc<any>>
-  readonly?: boolean
+  options?: ObservableArray<IDoc<T>>
+  readOnly?: boolean
   innerRef?: any
   placeholder?: string
-  source?: (text) => Promise<any[]>
+  source?: (text) => Promise<IDoc<T>[]>
   dontLoadEmptyString?: boolean
-  dataGridColumn?: IDatagridColumn<any>
+  dataGridColumn?: IDatagridColumn<T>
 }
 
-const supportTableEntries: { [key: string]: ObservableArray<IDoc<any>> } = {};
+const supportTableEntries: { [key: string]: ObservableArray<IDoc<unknown>> } = {};
 const supportTables = []; //[GLAccountTypes, GLBalanceTypes];
 
 const fkColumnValueCache = {} as Record<string, string>;
 
-export function TypeaheadFK(props: IProps) {
+export function TypeaheadFK<T>(props: IProps<T>) {
   const { fkCollection } = props;
   const [fkId, setFkId] = useObservable(props.fkId);
-  const [docObs] = useState(() => observable<IDoc<any>>());
+  const [docObs] = useState(() => observable<IDoc<T>>());
   const [doc, setDoc] = useObservable(docObs);
   useObservable(props.options);
 
@@ -40,13 +40,13 @@ export function TypeaheadFK(props: IProps) {
     if (!supportTableEntries[fkCollection.entityName]) {
       supportTableEntries[fkCollection.entityName] = fkCollection.observables.list();
     }
-    options = supportTableEntries[fkCollection.entityName];
+    options = supportTableEntries[fkCollection.entityName] as any;
     source = undefined;
   }
 
   // look up doc with fkId
   useEffect(() => {
-    if (doc?.id === fkId) return;
+    if (doc.primaryKey() === fkId) return;
     if (options) {
       const opt = options().find(o => o.primaryKey() === fkId);
       setDoc(opt);
@@ -56,13 +56,13 @@ export function TypeaheadFK(props: IProps) {
     if (supportTables.map(t => t.name).includes(fkCollection.entityName)) {
 
       // get doc from list of support table entries, if support table entries are loaded, wait for load
-      const _doc = supportTableEntries[fkCollection.entityName]().find(i => i.primaryKey() === fkId)
+      const _doc = supportTableEntries[fkCollection.entityName]().find(i => i.primaryKey() === fkId) as (IDoc<T> | null)
       if (_doc) {
         setDoc(_doc)
       } else {
         let sub = supportTableEntries[fkCollection.entityName].subscribe(() => {
           sub.dispose();
-          const _doc = supportTableEntries[fkCollection.entityName]().find(i => i.primaryKey() === fkId)
+          const _doc = supportTableEntries[fkCollection.entityName]().find(i => i.primaryKey() === fkId) as IDoc<T>
           setDoc(_doc);
         });
       }
@@ -100,12 +100,13 @@ export function TypeaheadFK(props: IProps) {
     return (<span>loading...</span>);
   }
 
-  if (props.readonly) {
+  if (props.readOnly) {
     return (<span>{displayField(doc)}</span>);
   }
 
   return (
-    <Typeahead
+    <Typeahead<IDoc<T>>
+
       innerRef={props.innerRef}
       value={docObs}
       source={source}
@@ -114,9 +115,9 @@ export function TypeaheadFK(props: IProps) {
       minLength={0}
       placeholder={props.placeholder || camelCaseToSpaces(fkCollection.entity.name)}
       afterChange={value => {
-        if (value?.id !== fkId) {
+        if (value?.primaryKey() !== fkId) {
           setDoc(value);
-          setFkId(value?.id);
+          setFkId(value.primaryKey() as string);
         }
       }}
       dontLoadEmptyString={props.dontLoadEmptyString}

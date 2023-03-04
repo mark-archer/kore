@@ -101,8 +101,8 @@ export function Autogrid<T>(params: IParams<T>) {
       if (AutoColumnsExcludedNames.map(s => s.toLowerCase()).includes(c.name.toLowerCase())) {
         return;
       }
-      if (c.editable !== true && c.editable !== false) {
-        c.editable = params.editable;
+      if (c.readOnly !== true && c.readOnly !== false) {
+        c.readOnly = params.editable;
       }
     })
   }

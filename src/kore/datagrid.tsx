@@ -11,7 +11,7 @@ import { InputNumber } from './input-number';
 
 export interface IDatagridColumn<T> extends Partial<IField> {
   name: string
-  editable?: boolean
+  readOnly?: boolean
   width?: any
   disabled?: (doc: IDoc<T>) => boolean
   getContent?: (doc: IDoc<T>, ref: React.MutableRefObject<undefined>) => any
@@ -283,7 +283,7 @@ const DataCell: <T>(params: IDataCellParams<T>) => any = React.memo(function <T>
         innerRef={ref}
         fkCollection={column.fkCollection}
         fkId={sub}
-        readonly={!column.editable}
+        readOnly={column.readOnly}
         dataGridColumn={column as any}
       />
     )
@@ -294,7 +294,7 @@ const DataCell: <T>(params: IDataCellParams<T>) => any = React.memo(function <T>
     style.textAlign = 'right';
   }
 
-  if (!column.editable) {
+  if (column.readOnly) {
     return (
       <span style={style}>
         {format(unwrap(doc[column.name]), column)}
