@@ -1,8 +1,8 @@
-import { MaybeSubscribable, unwrap } from 'knockout';
+import { unwrap } from 'knockout';
 import _, { isNumber } from 'lodash';
 import React, { useState } from 'react';
 import { formatMoney } from '../utils';
-import { useObservable, useObservableState } from '../kore/kore-hooks';
+import { useObservable } from '../kore/kore-hooks';
 
 interface IProps extends React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {
   value: any

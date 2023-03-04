@@ -9,7 +9,7 @@ import { TypeaheadFK } from './typeahead-fk'
 import { InputNumber } from './input-number';
 
 
-export interface IDatagridColumn<T> extends Partial<IField> {
+export interface IDatagridField<T> extends Partial<IField> {
   name: string
   readOnly?: boolean
   width?: any
@@ -23,7 +23,7 @@ export interface IDatagridColumn<T> extends Partial<IField> {
 
 export interface IParams<T> {
   data: IDoc<T>[]
-  columns: IDatagridColumn<T>[]
+  columns: IDatagridField<T>[]
   primaryKey: IField
   newRow?: () => any | false
   defaultSort?: string
@@ -72,7 +72,7 @@ export function Datagrid<T>(params: IParams<T>) {
     (data as any).sortOrder = strSortBy;
   }
 
-  function toggleSort(col: IDatagridColumn<T>) {
+  function toggleSort(col: IDatagridField<T>) {
     if (!col.name || (col.getContent && !col.getValue)) {
       return;
     }
@@ -118,7 +118,7 @@ export function Datagrid<T>(params: IParams<T>) {
         <thead>
           <tr>
             {/* {[primaryKey, ...columns].map((col: IDatagridColumn<T>) => */}
-            {columns.map((col: IDatagridColumn<T>) =>
+            {columns.map((col: IDatagridField<T>) =>
               <th key={col.name} scope="col" style={{ width: col.width }}
                 onClick={evt => !params.disableSorting && toggleSort(col)}
               >
@@ -192,7 +192,7 @@ export function Datagrid<T>(params: IParams<T>) {
   )
 }
 
-function format(data: any, column: IDatagridColumn<any>): string {
+function format(data: any, column: IDatagridField<any>): string {
   if (data === null || data === undefined) {
     return '';
   }
@@ -214,8 +214,8 @@ function format(data: any, column: IDatagridColumn<any>): string {
 
 interface IDataRowParams<T> {
   rowData: IDoc<T>
-  columns: IDatagridColumn<T>[]
-  primaryKey: IDatagridColumn<T>
+  columns: IDatagridField<T>[]
+  primaryKey: IDatagridField<T>
   iRow: number
   cellState: any
   // key?: any
@@ -241,7 +241,7 @@ const DataRow: <T>(params: IDataRowParams<T>) => any =
 
 interface IDataCellParams<T> {
   doc: IDoc<T>
-  column: IDatagridColumn<T>
+  column: IDatagridField<T>
   iRow: number
   iCol: number
   cellState: any
@@ -349,7 +349,7 @@ const DataCell: <T>(params: IDataCellParams<T>) => any = React.memo(function <T>
 
 }) as any;
 
-function styleCellTd<T>(rowData: IDoc<T>, column: IDatagridColumn<T>): React.CSSProperties {
+function styleCellTd<T>(rowData: IDoc<T>, column: IDatagridField<T>): React.CSSProperties {
   const { dataType, format } = column;
   let textAlign: any =
     dataType === 'boolean' ? 'center' :

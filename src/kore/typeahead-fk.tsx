@@ -5,7 +5,7 @@ import { Typeahead } from './typeahead';
 import { observable, Observable, ObservableArray } from 'knockout';
 import { useObservable } from './kore-hooks';
 import { camelCaseToSpaces } from '../utils';
-import { IDatagridColumn } from './datagrid';
+import { IDatagridField } from './datagrid';
 
 interface IProps<T>{
   fkCollection: Collection<T>
@@ -16,7 +16,7 @@ interface IProps<T>{
   placeholder?: string
   source?: (text) => Promise<IDoc<T>[]>
   dontLoadEmptyString?: boolean
-  dataGridColumn?: IDatagridColumn<T>
+  dataGridColumn?: IDatagridField<T>
 }
 
 const supportTableEntries: { [key: string]: ObservableArray<IDoc<unknown>> } = {};

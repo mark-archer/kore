@@ -5,12 +5,12 @@ import { Input } from './input';
 import { Collection } from '../orm/collection';
 import { IDoc } from '../orm/doc';
 import { Autogrid } from './autogrid';
-import { IDatagridColumn } from './datagrid';
+import { IDatagridField } from './datagrid';
 import { useObservable, useSubscription } from './kore-hooks';
 
 interface IProps {
   collection: Collection<any>
-  columns?: IDatagridColumn<any>[]
+  columns?: IDatagridField<any>[]
   onGoto?: boolean | ((doc: IDoc<any>) => any)
   data?: ObservableArray<IDoc<any>>
   defaultSort?: string
@@ -124,7 +124,7 @@ export const AutoscreenGrid = (props: IProps) => {
         columns={props.columns}
         data={data}
         defaultSort={props.defaultSort ?? 'id'}
-        editable={props.readOnly !== false}
+        readOnly={props.readOnly !== false}
         showSave={false}
         showDelete={showDelete}
         onDelete={doc => {

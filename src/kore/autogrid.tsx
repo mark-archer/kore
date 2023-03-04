@@ -3,15 +3,15 @@ import React, { useState } from 'react';
 import { useObservable, useObservableState } from './kore-hooks';
 import { Collection, IField } from '../orm/collection';
 import { IDoc } from '../orm/doc';
-import { Datagrid, IDatagridColumn } from './datagrid';
+import { Datagrid, IDatagridField } from './datagrid';
 import { camelCaseToSpaces } from '../utils';
 
 interface IParams<T> {
   collection?: Collection<T>,
   data?: IDoc<T>[] | ObservableArray<IDoc<T>>
-  columns?: IDatagridColumn<T>[]
+  columns?: IDatagridField<T>[]
   primaryKey?: IField
-  editable?: boolean
+  readOnly?: boolean
   newRow?: (() => any) | boolean
   showSave?: boolean
   showDelete?: boolean
@@ -52,7 +52,7 @@ export function Autogrid<T>(params: IParams<T>) {
   // automatic newRow function
   const newRowCount = useObservableState(0);
   let _newRow: () => any;
-  if (newRow === true || (newRow === undefined && params.editable)) {
+  if (newRow === true || (newRow === undefined && !params.readOnly)) {
     // TODO if collection is missing this will fail
     newRow = () => collection.init();
   }
@@ -64,7 +64,7 @@ export function Autogrid<T>(params: IParams<T>) {
     }
   }
 
-  let columns: IDatagridColumn<T>[] = params.columns || collection?.fields;
+  let columns: IDatagridField<T>[] = params.columns || collection?.fields;
   if (!columns) {
     return <p>Loading... <small><br />(or no data and no columns)</small></p>;
   }
@@ -96,13 +96,13 @@ export function Autogrid<T>(params: IParams<T>) {
     }
   });
 
-  if (params.editable === true || params.editable === false) {
+  if (params.readOnly === true || params.readOnly === false) {
     columns.forEach(c => {
       if (AutoColumnsExcludedNames.map(s => s.toLowerCase()).includes(c.name.toLowerCase())) {
         return;
       }
       if (c.readOnly !== true && c.readOnly !== false) {
-        c.readOnly = params.editable;
+        c.readOnly = params.readOnly;
       }
     })
   }
@@ -138,7 +138,7 @@ export function Autogrid<T>(params: IParams<T>) {
     }
   }
 
-  if ((params.showSave || params.onSave) || (params.editable && params.showSave !== false)) {
+  if ((params.showSave || params.onSave) || (!params.readOnly && params.showSave !== false)) {
     const onSave = (doc: IDoc<T>) => {
       if (params.onSave) return params.onSave(doc);
       doc.save()
@@ -171,7 +171,7 @@ export function Autogrid<T>(params: IParams<T>) {
 
   const [_data, setData] = useObservable(obsData);  
   
-  if (params.showDelete !== false && (params.onDelete || params.editable)) {
+  if (params.showDelete !== false && (params.onDelete || !params.readOnly)) {
     const onDelete = (doc: IDoc<T>) => {
       if (params.onDelete) return params.onDelete(doc);
       if (doc.isNew || confirm(`Are you sure you want to delete ${doc.displayValue()}?`)) {
