@@ -78,9 +78,6 @@ export class Collection<T> {
 		// set fkCollection for any fkFields that reference this collection
 		for (const collection of collections) {
 			for (const field of collection.fields) {
-				if (field.fkType) {
-					console.log('fkType', field);
-				}
 				if (field.fkType?.name === this.entityName) {
 					field.fkCollection = this;
 				}
@@ -90,7 +87,7 @@ export class Collection<T> {
 		for (const field of this.fields) {
 			if (field.fkType && !field.fkCollection) {
 				for (const collection of collections) {
-					if (collection.entityName === field.fkType?.name) {
+					if (field.fkType?.name === collection.entityName) {
 						field.fkCollection = collection;
 					}
 				}	

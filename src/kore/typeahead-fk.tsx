@@ -46,7 +46,7 @@ export function TypeaheadFK<T>(props: IProps<T>) {
 
   // look up doc with fkId
   useEffect(() => {
-    if (doc.primaryKey() === fkId) return;
+    if (doc?.primaryKey() === fkId) return;
     if (options) {
       const opt = options().find(o => o.primaryKey() === fkId);
       setDoc(opt);
