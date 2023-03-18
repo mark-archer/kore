@@ -6,6 +6,8 @@ import { IDoc } from '../orm/doc';
 import { Datagrid, IDatagridField } from './datagrid';
 import { camelCaseToSpaces } from '../utils';
 
+console.log('autogrid');
+
 interface IParams<T> {
   collection?: Collection<T>,
   data?: IDoc<T>[] | ObservableArray<IDoc<T>>
