@@ -72,12 +72,19 @@ export class Collection<T> {
 			}
 			_entity = _entity.extends;
 		}
-		for (const column of this.fields) {
-			if (column.fkType) {
-				column.fkCollection = collections.find(c => c.entity.name === column.fkCollection.entityName)
-				// column.fkCollection = require('./orm-types')[column.fkType.namePlural];
+		for (const collection of collections) {
+			for (const field of collection.fields) {
+				if (field.fkType && entity.name === field.fkType.namePlural) {
+					field.fkCollection = this;
+				}
 			}
 		}
+		// for (const column of this.fields) {
+		// 	if (column.fkType) {
+		// 		column.fkCollection = collections.find(c => c.entity.name === column.fkCollection.entityName)
+		// 		// column.fkCollection = require('./orm-types')[column.fkType.namePlural];
+		// 	}
+		// }
 		this.init = this.init.bind(this);
 		this.get = this.get.bind(this);
 		this.list = this.list.bind(this);

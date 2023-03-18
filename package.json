@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc && rm -rf ./dist",
     "test": "jest --coverage --no-cache",
-    "deploy": "yarn build; npm version patch; npm publish ."
+    "deploy": "yarn build; npm version patch; npm publish .; git push"
   },
   "devDependencies": {
     "@types/react": "17.0.2",
