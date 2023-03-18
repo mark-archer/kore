@@ -126,7 +126,7 @@ export function AutoscreenGrid<T>(props: IProps<T>) {
 
       { filterControls.length && (
         <div className="row" style={{ paddingBottom: '8px' }}>
-          {filterControls.map((c, i) => <span key={i}>{c}</span>)}
+          {filterControls.map((c, i) => <React.Fragment key={i}>{c}</React.Fragment>)}
         </div>
       )}
 
