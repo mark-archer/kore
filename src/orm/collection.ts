@@ -74,7 +74,10 @@ export class Collection<T> {
 		}
 		for (const collection of collections) {
 			for (const field of collection.fields) {
-				if (field.fkType && entity.name === field.fkType.namePlural) {
+				if (field.fkType) {
+					console.log('fkType', field);
+				}
+				if (field.fkType?.name === this.entity.name) {
 					field.fkCollection = this;
 				}
 			}
