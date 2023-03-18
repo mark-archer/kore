@@ -1,6 +1,6 @@
 {
   "name": "peers-kore",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "main": "index.ts",
   "types": "dist/index.d.ts",
   "repository": "https://github.com/mark-archer/kore",
