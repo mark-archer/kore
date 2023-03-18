@@ -65,6 +65,8 @@ export class Collection<T> {
 		this.entityName = entity.name;
 		let _entity = entity;
 		this.fields = [];
+
+		// load all fields, including from extended (parent) entities 
 		while (_entity) {
 			this.fields = [...this.fields, ..._entity.fields];
 			if (!primaryKey) {
@@ -72,16 +74,29 @@ export class Collection<T> {
 			}
 			_entity = _entity.extends;
 		}
+
+		// set fkCollection for any fkFields that reference this collection
 		for (const collection of collections) {
 			for (const field of collection.fields) {
 				if (field.fkType) {
 					console.log('fkType', field);
 				}
-				if (field.fkType?.name === this.entity.name) {
+				if (field.fkType?.name === this.entityName) {
 					field.fkCollection = this;
 				}
 			}
 		}
+		// try to set fkCollection for any of this collections fkFields
+		for (const field of this.fields) {
+			if (field.fkType && !field.fkCollection) {
+				for (const collection of collections) {
+					if (collection.entityName === field.fkType?.name) {
+						field.fkCollection = collection;
+					}
+				}	
+			}
+		}
+
 		// for (const column of this.fields) {
 		// 	if (column.fkType) {
 		// 		column.fkCollection = collections.find(c => c.entity.name === column.fkCollection.entityName)
