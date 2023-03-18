@@ -18,6 +18,7 @@ export type IDoc<T> = {
 	displayValue: (() => string)
 	primaryKey: (() => string | number)
 	isNew: boolean
+	hasChanges: () => boolean
 } & {
 	[key in keyof T]: T[key];
 }
@@ -117,7 +118,8 @@ export function newDoc<T>(
 				return doc[collection.primaryKey.name];
 			}
 		},
-		primaryKey: () => doc[collection.primaryKey.name]
+		primaryKey: () => doc[collection.primaryKey.name],
+		hasChanges: () => doc.isNew || doc.q() !== 0,
 	}
 
 	columns.forEach(col => {

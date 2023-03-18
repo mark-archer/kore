@@ -117,7 +117,7 @@ export function Datagrid<T>(params: IParams<T>) {
         {/* headers */}
         <thead>
           <tr>
-            {/* {[primaryKey, ...columns].map((col: IDatagridColumn<T>) => */}
+            {/* {[primaryKey, ...columns].map((col: IDatagridField<T>) => */}
             {columns.map((col: IDatagridField<T>) =>
               <th key={col.name} scope="col" style={{ width: col.width }}
                 onClick={evt => !params.disableSorting && toggleSort(col)}

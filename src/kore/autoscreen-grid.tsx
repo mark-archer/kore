@@ -21,6 +21,8 @@ interface IProps<T> {
   title?: string
   hideSearch?: boolean
   showDelete?: boolean
+  onSave?: (doc: IDoc<T>) => any
+  onDelete?: (doc: IDoc<T>) => any
 }
 
 export let DefaultGoTo = (path: string) => {
@@ -32,7 +34,7 @@ export function AutoscreenGrid<T>(props: IProps<T>) {
   const { collection } = props;
   const [data] = useState(() => props.data || collection.observables.list());
   const [error, setError] = useState('');
-  const [deletedDocs, setDeletedDocs] = useState<IDoc<any>[]>([]);
+  const [deletedDocs, setDeletedDocs] = useState<IDoc<T>[]>([]);
   const [searchText] = useState(() => observable(''))
   
   useSubscription(data, (_data) => {
@@ -53,10 +55,19 @@ export function AutoscreenGrid<T>(props: IProps<T>) {
 
   async function saveChanges() {
     try {
-      const _data = data();
-      _data.forEach(d => d.validate());
-      await Promise.all(deletedDocs.map(d => d.delete()));
-      await Promise.all(_data.filter(d => d.q() > 0 || d.isNew).map(d => d.save()));
+      const _data = data().filter(d => d.hasChanges());
+      // todo try to make this a batch operation (i.e. if any fail, they all fail)
+      if (props.onDelete) {
+        await Promise.all(deletedDocs.map(d => props.onDelete(d)));
+      } else {
+        await Promise.all(deletedDocs.map(d => d.delete()));
+      }
+      if (props.onSave) {
+        await Promise.all(_data.map(d => props.onSave(d)))
+      } else {
+        _data.forEach(d => d.validate());
+        await Promise.all(_data.map(d => d.save()));
+      }
       setError('');
       changesExist(false);
     } catch (err) {
