@@ -126,10 +126,7 @@ export function AutoscreenGrid<T>(props: IProps<T>) {
 
       { filterControls.length && (
         <div className="row" style={{ paddingBottom: '8px' }}>
-          {filterControls.map((c, i) => {
-            c.key = i;
-            return c;
-          })}
+          {filterControls.map((c, i) => <span key={i}>{c}</span>)}
         </div>
       )}
 
