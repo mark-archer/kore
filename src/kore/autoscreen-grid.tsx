@@ -135,7 +135,7 @@ export function AutoscreenGrid<T>(props: IProps<T>) {
         columns={props.columns}
         data={data}
         defaultSort={props.defaultSort ?? 'id'}
-        readOnly={props.readOnly !== false}
+        readOnly={props.readOnly}
         showSave={false}
         showDelete={showDelete}
         onDelete={doc => {
