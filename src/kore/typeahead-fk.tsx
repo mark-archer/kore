@@ -117,7 +117,7 @@ export function TypeaheadFK<T>(props: IProps<T>) {
       afterChange={value => {
         if (value?.primaryKey() !== fkId) {
           setDoc(value);
-          setFkId(value.primaryKey() as string);
+          setFkId(value?.primaryKey() as string);
         }
       }}
       dontLoadEmptyString={props.dontLoadEmptyString}
