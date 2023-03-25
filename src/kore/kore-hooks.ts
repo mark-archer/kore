@@ -2,6 +2,7 @@
 import { isSubscribable, observable, observableArray, Subscribable, unwrap } from 'knockout';
 import { useState, useEffect } from 'react';
 import { isArray, isEqual } from 'lodash';
+import { fromJSON, toJSON } from '../utils';
 
 export function useObservable<T>(sub: Subscribable<T> | T): [T, (value: T) => void] {
   const [data, setData] = useState(() => unwrap(sub));
@@ -89,3 +90,16 @@ export function useOnScreen(ref) {
   return isIntersecting
 }
 
+export function persistentValue<T>(initialValue: T, globalName: string): ko.Observable<T> {
+  let q = observable<T>();
+  q.subscribe(newVal => {
+    localStorage.setItem(globalName, JSON.stringify(toJSON(newVal)))
+  })
+  const existing = localStorage.getItem(globalName);
+  if (existing) {
+    q(fromJSON(JSON.parse(existing)))
+  } else {
+    q(initialValue);
+  }
+  return q;
+}

@@ -222,7 +222,7 @@ export function Autogrid<T>(params: IParams<T>) {
   }
 
   return (
-    <Datagrid {...datagridParams} />
+    <Datagrid cacheSortWithId={collection?.entityName} {...datagridParams} />
   )
 
 }

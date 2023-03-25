@@ -2,7 +2,7 @@ import { computed, isSubscribable, Observable, unwrap } from 'knockout';
 import React, { useRef, useState } from 'react';
 import _, { isNumber, sumBy } from 'lodash';
 import { camelCaseToSpaces, moneyFormatter } from '../utils';
-import { useObservable, useObservableArrayState } from './kore-hooks';
+import { persistentValue, useObservable, useObservableArrayState } from './kore-hooks';
 import { IField } from '../orm/collection';
 import { IDoc } from '../orm/doc';
 import { TypeaheadFK } from './typeahead-fk'
@@ -28,17 +28,22 @@ export interface IParams<T> {
   newRow?: () => any | false
   defaultSort?: string
   disableSorting?: boolean
+  cacheSortWithId?: string
 }
 
+export const sortCache = persistentValue<{ [sortId: string]: string[] }>({}, 'datagridSortCache');
+
 export function Datagrid<T>(params: IParams<T>) {
-  const { data, primaryKey, columns, newRow, defaultSort } = params;
+  const { data, primaryKey, columns, newRow, defaultSort, cacheSortWithId } = params;
 
   const [cellState]: any = useState(() => ({} as Record<string, any>));
   const [focusOnNewRow, setFocusOnNewRow] = useState(false);
   cellState.maxIRow = data.length - 1;
   cellState.maxICol = columns.length - 1;
 
-  const _defaultSort = (defaultSort || '').split(',').reverse().filter(s => s);
+  const _defaultSort = cacheSortWithId && sortCache()[cacheSortWithId]?.length
+    ? sortCache()[cacheSortWithId]
+    : (defaultSort || '').split(',').reverse().filter(s => s);
   const sortFields = useObservableArrayState<string>(_defaultSort);
   const showTotals = columns.some(c => c.showTotal);
 
@@ -85,6 +90,10 @@ export function Datagrid<T>(params: IParams<T>) {
       sortFields.remove(sortDesc);
     } else {
       sortFields.unshift(fieldName);
+    }
+    
+    if (cacheSortWithId) {
+      sortCache({ ...sortCache(), [cacheSortWithId]: [...sortFields()] });
     }
   }
 
