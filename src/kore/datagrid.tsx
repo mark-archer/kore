@@ -167,20 +167,20 @@ export function Datagrid<T>(params: IParams<T>) {
         {showTotals && (
           <tfoot>
             <tr>
-              {columns.map(col => {
+              {columns.map((col, i) => {
                 if (!col.showTotal) {
                   return (
-                    <td></td>
+                    <td key={i}></td>
                   )
                 }
                 if (col.showTotal === true) {
                   return (
-                    <td style={{ textAlign: 'right', fontWeight: 'bold' }}>
+                    <td key={i} style={{ textAlign: 'right', fontWeight: 'bold' }}>
                       {format(sumBy(data, col.name), col)}
                     </td>
                   )
                 } else {
-                  return <td>{col.showTotal(data)}</td>
+                  return <td key={i}>{col.showTotal(data)}</td>
                 }
               })}
             </tr>
