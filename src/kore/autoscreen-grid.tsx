@@ -106,7 +106,7 @@ export function AutoscreenGrid<T>(props: IProps<T>) {
     )
   }
 
-  const showDelete = typeof props.showDelete === 'boolean' ? props.showDelete : props.readOnly !== false;
+  const showDelete = typeof props.showDelete === 'boolean' ? props.showDelete : props.readOnly !== true;
 
   return (
     <div className='container-fluid'>
