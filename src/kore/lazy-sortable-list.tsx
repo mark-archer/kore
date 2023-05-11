@@ -1,6 +1,6 @@
 import React from 'react';
 import { LazyList } from './lazy-list';
-import { SortableList } from './sortable-list';
+import { ISortable, SortableList } from './sortable-list';
 
 interface IProps<T> {
   loadMore: (existingItems: T[]) => Promise<T[]>
@@ -14,7 +14,7 @@ interface IProps<T> {
   dragHandleClassName?: string
 }
 
-export function LazySortableList<T>(props: IProps<T>) {
+export function LazySortableList<T extends ISortable>(props: IProps<T>) {
 
   return (
     <LazyList

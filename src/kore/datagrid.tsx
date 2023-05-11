@@ -161,7 +161,8 @@ export function Datagrid<T>(params: IParams<T>) {
         {newRow &&
           <tfoot>
             <tr>
-              <th scope="row" onKeyDown={evt => onCellKeyDown(evt, cellState, data.length, 0)}>
+              <th scope="row" onKeyDown={evt => 
+                onCellKeyDown(evt, cellState, data.length, 0)}>
                 <button ref={newRowBtn} className="btn btn-outline-secondary btn-sm" onClick={_newRow}
                   style={{ fontSize: '20px' }}
                 >

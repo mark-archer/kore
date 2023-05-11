@@ -3,7 +3,13 @@ import { MaybeSubscribable, unwrap } from 'knockout';
 import Sortable from 'sortablejs';
 import { last, sortBy } from 'lodash';
 
-export class SortableList<T = any> extends React.Component<
+console.log('sortable-list');
+
+export interface ISortable {
+  sortOrder: number
+}
+
+export class SortableList<T extends ISortable> extends React.Component<
   {
     items: MaybeSubscribable<T[]>,
     renderItem: (props: { item: T, taskListId: string, sortHandle: string }) => React.ReactNode,
@@ -13,6 +19,7 @@ export class SortableList<T = any> extends React.Component<
     hidden?: boolean,
     containerProps?: Record<string, any>
     dragHandleClassName?: string
+    sortDirection?: 'asc' | 'desc'
   }, {}>
 {
 
@@ -32,8 +39,8 @@ export class SortableList<T = any> extends React.Component<
     const items = this.items;
     if (index === 0) return Date.now();
     if (index >= items.length) return last(items).sortOrder - 10000;
-    const above = items[index - 1].sortOrder;
-    const below = items[index].sortOrder;
+    const above = items[index - 1].sortOrder ?? Date.now();
+    const below = items[index].sortOrder ?? Number.MIN_VALUE;
     if (above === below) alert('sort order has converged to the same number in this area.  Try moving items to the top or bottom of the list to fix it')
     return above - ((above - below) / 2)
   }
@@ -78,7 +85,11 @@ export class SortableList<T = any> extends React.Component<
 
   public render() {
     let items = unwrap(this.props.items);
-    items = sortBy(items, 'sortOrder').reverse();
+    if (this.props.sortDirection === 'asc') {
+      items = sortBy(items, i => i.sortOrder ?? -Infinity);
+    } else {
+      items = sortBy(items, i => -i.sortOrder ?? Infinity);
+    }
     this.items = items;
     return (
       <div id={this.listId} style={{ minHeight: "25px" }} {...this.props.containerProps} >

@@ -14,6 +14,7 @@ export function LazyList<T>(props: IProps<T>) {
   const [items] = useObservable(itemsObsAry);
   const [allLoaded, setAllLoaded] = useState(false);
   const [loading] = useState(() => observable(false));
+  useObservable(loading);
 
   async function loadMore() {
     if (loading()) {
