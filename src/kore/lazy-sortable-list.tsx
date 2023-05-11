@@ -12,10 +12,11 @@ interface IProps<T> {
   hidden?: boolean,
   containerProps?: Record<string, any>
   dragHandleClassName?: string
+  sortDirection?: 'asc' | 'desc'
 }
 
 export function LazySortableList<T extends ISortable>(props: IProps<T>) {
-
+  
   return (
     <LazyList
       loadMore={props.loadMore}
@@ -23,13 +24,14 @@ export function LazySortableList<T extends ISortable>(props: IProps<T>) {
       renderItems={items => (
         <SortableList
           items={items}
+          sortDirection={props.sortDirection}
           renderItem={props.renderItem}
           listsGroup={props.listsGroup}
           onAdd={props.onAdd}
           onUpdate={props.onUpdate}
           hidden={props.hidden}
           containerProps={props.containerProps}
-          dragHandleClassName={props.dragHandleClassName}
+          dragHandleClassName={props.dragHandleClassName}          
         />
       )}
     />

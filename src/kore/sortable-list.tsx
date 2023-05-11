@@ -9,18 +9,19 @@ export interface ISortable {
   sortOrder: number
 }
 
-export class SortableList<T extends ISortable> extends React.Component<
-  {
-    items: MaybeSubscribable<T[]>,
-    renderItem: (props: { item: T, taskListId: string, sortHandle: string }) => React.ReactNode,
-    listsGroup?: string
-    onAdd?: ((itemId: string, sortOrder: number) => any),
-    onUpdate?: ((args: { items: T[], ixMoved: number[] }) => any),
-    hidden?: boolean,
-    containerProps?: Record<string, any>
-    dragHandleClassName?: string
-    sortDirection?: 'asc' | 'desc'
-  }, {}>
+interface ISortableListProps<T extends ISortable> {
+  items: MaybeSubscribable<T[]>,
+  renderItem: (props: { item: T, taskListId: string, sortHandle: string }) => React.ReactNode,
+  listsGroup?: string
+  onAdd?: ((itemId: string, sortOrder: number) => any),
+  onUpdate?: ((args: { items: T[], ixMoved: number[] }) => any),
+  hidden?: boolean,
+  containerProps?: Record<string, any>
+  dragHandleClassName?: string
+  sortDirection?: 'asc' | 'desc'
+}
+
+export class SortableList<T extends ISortable> extends React.Component<ISortableListProps<T>, {}>
 {
 
   constructor(props) {
