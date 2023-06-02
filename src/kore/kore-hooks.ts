@@ -33,7 +33,7 @@ export function useObservable<T>(sub: Subscribable<T> | T): [T, (value: T) => vo
   return [data, newData => (setData(newData), sub(newData))];
 }
 
-export function usePromise<T>(p: Promise<T> | (() => Promise<T>), initialValue?: T): T {
+export function usePromise<T>(p: Promise<T> | (() => Promise<T>), initialValue?: T, deps: React.DependencyList = []): T {
   const [data, setData] = useState(initialValue);
   useEffect(() => {
     let disposed = false;
@@ -49,7 +49,7 @@ export function usePromise<T>(p: Promise<T> | (() => Promise<T>), initialValue?:
     return () => { 
       disposed = true; 
     }
-  }, []);
+  }, deps);
   return data;
 }
 
