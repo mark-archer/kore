@@ -2,12 +2,13 @@ import React from 'react';
 import { useObservable } from './kore-hooks';
 
 interface IProps extends React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement> {
-  value: any
+  value: any,
+  type?: React.HTMLInputTypeAttribute
 }
 
 export function Input(props: IProps) {
   const [value, setValue] = useObservable(props.value);
-  const type = typeof value;
+  let type = props.type ?? (typeof value);
   function onChange(evt: React.ChangeEvent<HTMLInputElement>) {
     let _value: any = evt.target.value;
     if (type === 'number') {
