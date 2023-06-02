@@ -4,13 +4,12 @@ import { useState, useEffect } from 'react';
 import { isArray, isEqual } from 'lodash';
 import { fromJSON, toJSON } from '../utils';
 
-export function useObservable<T>(sub: Subscribable<T> | T): [T, (value: T) => void] {
+export function useObservable<T>(sub: Subscribable<T> | T, deps: React.DependencyList = []): [T, (value: T) => void] {
   const [data, setData] = useState(() => unwrap(sub));
-  if (!isSubscribable(sub)) {
-    return [data, setData];
-  }
-
   useEffect(() => {
+    if (!isSubscribable(sub)) {
+      return;
+    }
     const subscription = sub.subscribe(() => {
       const newData = sub();
       // @ts-ignore
@@ -28,9 +27,14 @@ export function useObservable<T>(sub: Subscribable<T> | T): [T, (value: T) => vo
       setData(newData);
     }
     return () => subscription.dispose();
-  }, []);
+  }, deps);
 
-  return [data, newData => (setData(newData), sub(newData))];
+  return [data, newData => {
+    setData(newData);
+    if (isSubscribable(sub)) {
+      sub(newData);
+    }
+  }];
 }
 
 export function usePromise<T>(p: Promise<T> | (() => Promise<T>), initialValue?: T, deps: React.DependencyList = []): T {
