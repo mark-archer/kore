@@ -18,7 +18,7 @@ export function LazyList<T>(props: IProps<T>) {
 
   async function loadMore() {
     if (loading()) {
-      console.log('loading called while prior load still in progress')
+      // console.log('loading called while prior load still in progress')
       return;
     }
     loading(true);
