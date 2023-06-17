@@ -2,7 +2,6 @@
 import { Observable, observable, observableArray, ObservableArray } from 'knockout';
 import { IDoc, newDoc } from './doc';
 import { IObjectMatch, objectMatch } from '../utils';
-import { Record as RObject } from 'runtypes';
 
 export interface IEntity {
   id?: string
@@ -46,22 +45,23 @@ export interface IDataSource<T> {
 	remove(data: T): Promise<boolean>
 }
 
+export let defaultPrimaryKey: IField = { name: "id", dataType: "string" };
+
 export const collections: Collection<any>[] = [];
 
 export class Collection<T> {
 
 	fields: IField[]
 	entityName: string
-	rtype: RObject<any, false>
+	readonly primaryKey: IField
 
 	constructor(
 		readonly entity: IEntity,
-		rtype: any,
+		readonly validate: (data: T) => void,
 		private dataSource: IDataSource<T>,
-		readonly primaryKey: IField = { name: "id", dataType: "string" },
+		primaryKey?: IField,
 	) {
 		collections.push(this);
-		this.rtype = rtype;
 		this.entityName = entity.name;
 		let _entity = entity;
 		this.fields = [];
@@ -74,6 +74,8 @@ export class Collection<T> {
 			}
 			_entity = _entity.extends;
 		}
+
+		this.primaryKey = primaryKey ?? defaultPrimaryKey
 
 		// set fkCollection for any fkFields that reference this collection
 		for (const collection of collections) {

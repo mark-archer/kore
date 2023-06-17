@@ -33,7 +33,6 @@ export function newDoc<T>(
 ): 
 	IDoc<T> 
 {
-	const rtype = (collection.rtype as any) as RObject<any, false>;
 	const columns = [collection.primaryKey, ...collection.fields];
 	// @ts-ignore
 	const doc: IDoc<T> = {
@@ -74,11 +73,6 @@ export function newDoc<T>(
 		},
 		save: async () => {
 			const data = doc.validate();
-			const validationResult = rtype.validate(data)
-			if (!validationResult.success){
-				const details = (validationResult as any)?.details;
-				throw new Error('Validation failed: ' + JSON.stringify(details, null, 2))
-			}
 			const src: any = await collection.save(data)
 			return doc.load(src).then(() => {
 				doc.isNew = false;
@@ -93,11 +87,7 @@ export function newDoc<T>(
 		validate: () => {
 			try {
 				const data = doc.toJS();
-				const validationResult = rtype.validate(data)
-				if (!validationResult.success){
-					const details = (validationResult as any)?.details;
-					throw new Error('Validation failed: ' + JSON.stringify(details, null, 2))
-				}
+				collection.validate(data);
 				doc.validationError(null);
 				return data;
 			} catch (err) {
@@ -137,4 +127,4 @@ export function newDoc<T>(
 }
 
 //@ts-ignore
-window.newDoc = newDoc;
+if (typeof window !== 'undefined') window.newDoc = newDoc;

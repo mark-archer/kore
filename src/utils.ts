@@ -256,4 +256,4 @@ export function fromJSON(obj: any, externalReferences?: any) {
 }
 
 // @ts-ignore
-window.utils = module.exports;
+if (typeof window !== 'undefined') window.utils = module.exports;
