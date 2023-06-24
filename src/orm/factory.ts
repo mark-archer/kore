@@ -1,4 +1,4 @@
-import { Collection, FieldType, IDataSource, IField } from "./collection"
+import { Collection, FieldType, IDataSource, IEntity } from "./collection"
 
 import {
   Boolean as RBoolean,
@@ -10,16 +10,6 @@ import {
 } from 'runtypes';
 
 const RDate = RInstanceOf(Date);
-
-export interface IEntity {
-  id?: string
-  name: string
-  namePlural?: string
-  fields: IField[]
-  primaryKey?: IField
-  extends?: IEntity
-  displayValue?: string | ((doc: any) => string)
-}
 
 // these are intended to be overridden by individual applications when generating types
 export const dynamic = {
@@ -59,6 +49,16 @@ export function pluralize(name: string) {
     return name + 'es';
   }
   return name + 's';
+}
+
+export function singular(name: string) {
+  if (name.endsWith('es')) {
+    return name.substring(0, name.length-1);
+  }
+  if (name.endsWith('s')) {
+    return name.substring(0, name.length);
+  }
+  return name
 }
 
 async function genCollection(entity: IEntity) {
@@ -150,8 +150,8 @@ export function validationFactory(entity: IEntity) {
 
 export function collectionFactory<T>(
   entity: IEntity, 
-  dataSource: IDataSource<T> = dynamic.dataSourceFactory(entity)
+  dataSource: IDataSource<T> = dynamic.dataSourceFactory(entity),
+  validate: (data: any) => void = validationFactory(entity)
 ): Collection<T> {
-  const validate = validationFactory(entity);
   return new Collection<T>(entity, validate, dataSource);
 }
