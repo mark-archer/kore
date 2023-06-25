@@ -6,15 +6,16 @@ import {
   String as RString,
   Record as RObject,
   InstanceOf as RInstanceOf,
-  Unknown as RAny
+  Unknown as RAny,
+  Runtype
 } from 'runtypes';
 
 const RDate = RInstanceOf(Date);
 
 // these are intended to be overridden by individual applications when generating types
-export const dynamic = {
-  RId: RString,
-  dataSourceFactory: (entity: IEntity) => {
+export const config = {
+  RId: RString as Runtype,
+  dataSourceFactory: function<T = any>(entity: IEntity): IDataSource<T> {
     throw new Error("The `orm.factory.dataSourceFactory` function needs to be set before types can be generated and imported");
   },
   entities: {} as Record<string, IEntity>
@@ -69,6 +70,7 @@ async function genCollection(entity: IEntity) {
 export async function generateTypedEntity(
   entity: IEntity,
   options?: {
+    fs?: any,
     dontGenInterface?: boolean,
     dontWiteFile?: boolean,
     fileDir?: string,
@@ -96,7 +98,8 @@ export async function generateTypedEntity(
     return code;
   }
 
-  const fs = require('fs');
+
+  const fs = options?.fs ?? eval("require(`fs`)");
   let filePath = options?.fileDir ?? `./orm-types`;
   if (!fs.existsSync(filePath)) {
     fs.mkdirSync(filePath, { recursive: true });
@@ -109,7 +112,7 @@ export async function generateTypedEntity(
 function FieldTypeToRField(fieldType: FieldType) {
   switch (fieldType) {
     case 'id':
-      return dynamic.RId;
+      return config.RId;
     case 'Date':
       return RDate;
     case 'string':
@@ -150,8 +153,8 @@ export function validationFactory(entity: IEntity) {
 
 export function collectionFactory<T>(
   entity: IEntity, 
-  dataSource: IDataSource<T> = dynamic.dataSourceFactory(entity),
-  validate: (data: any) => void = validationFactory(entity)
+  dataSource: IDataSource<T> = config.dataSourceFactory<T>(entity),
+  validate: ((data: any) => void) = validationFactory(entity)
 ): Collection<T> {
   return new Collection<T>(entity, validate, dataSource);
 }

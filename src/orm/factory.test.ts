@@ -1,5 +1,5 @@
-import { IEntity } from "./collection";
-import { collectionFactory, generateTypedEntity, dynamic } from "./factory";
+import { IDataSource, IEntity } from "./collection";
+import { collectionFactory, generateTypedEntity, config } from "./factory";
 
 const Task: IEntity = {
   name: 'Task',
@@ -8,10 +8,9 @@ const Task: IEntity = {
   ]
 }
 
-// @ts-ignore
-dynamic.dataSourceFactory = () => ({})
+config.dataSourceFactory = () => ({} as any as IDataSource<any>)
 
-dynamic.entities = { 
+config.entities = { 
   Task
 };
 

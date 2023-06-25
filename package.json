@@ -7,7 +7,7 @@
   "author": "Mark Archer <mark_archer@live.com>",
   "license": "MIT",
   "scripts": {
-    "build": "tsc && rm -rf ./dist",
+    "build": "rm -rf ./dist && tsc",
     "test": "jest --coverage --no-cache",
     "deploy": "yarn build; npm version patch; npm publish .; git push"
   },
