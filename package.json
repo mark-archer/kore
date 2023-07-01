@@ -1,8 +1,7 @@
 {
   "name": "peers-kore",
   "version": "0.0.29",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "index.ts",
   "repository": "https://github.com/mark-archer/kore",
   "author": "Mark Archer <mark_archer@live.com>",
   "license": "MIT",
@@ -13,9 +12,9 @@
   },
   "devDependencies": {
     "@types/node": "^18.15.9",
-    "@types/react-dom": "^16.8.4",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "@types/react-dom": "^18.2.4",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "typescript": "5.0.4"
   },
   "dependencies": {

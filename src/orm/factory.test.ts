@@ -1,31 +1,31 @@
-import { IDataSource, IEntity } from "./collection";
-import { collectionFactory, generateTypedEntity, config } from "./factory";
+// import { IDataSource, IEntity } from "./collection";
+// import { collectionFactory, generateTypedEntity, config } from "./factory";
 
-const Task: IEntity = {
-  name: 'Task',
-  fields: [
-    { name: 'title', dataType: 'string'}
-  ]
-}
+// const Task: IEntity = {
+//   name: 'Task',
+//   fields: [
+//     { name: 'title', dataType: 'string'}
+//   ]
+// }
 
-config.dataSourceFactory = () => ({} as any as IDataSource<any>)
+// config.dataSourceFactory = () => ({} as any as IDataSource<any>)
 
-config.entities = { 
-  Task
-};
+// config.entities = { 
+//   Task
+// };
 
-import { ITask, Tasks } from "../../orm-types/Task";
+// import { ITask, Tasks } from "../../orm-types/Task";
 
-async function main() {
+// async function main() {
 
-  const code = generateTypedEntity(Task);
-  const dynamicCollection = collectionFactory(Task);
-  // const d = await dynamicCollection.get('test')
-  const task = Tasks.init();
-  console.log(task);
+//   const code = generateTypedEntity(Task);
+//   const dynamicCollection = collectionFactory(Task);
+//   // const d = await dynamicCollection.get('test')
+//   const task = Tasks.init();
+//   console.log(task);
 
-}
+// }
 
-main()
-  .then((res: any) => console.log(res ?? 'done'))
-  .catch(err => console.error('ERROR', err))
+// main()
+//   .then((res: any) => console.log(res ?? 'done'))
+//   .catch(err => console.error('ERROR', err))
