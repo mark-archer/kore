@@ -63,7 +63,7 @@ export class Collection<T> {
 	) {
 		collections.push(this);
 		this.entityName = entity.name;
-		let _entity = entity;
+		let _entity: IEntity | undefined = entity;
 		this.fields = [];
 
 		// load all fields, including from extended (parent) entities 
