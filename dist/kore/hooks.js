@@ -92,6 +92,9 @@ function useOnScreen(ref) {
 exports.useOnScreen = useOnScreen;
 function persistentValue(initialValue, globalName) {
     let q = (0, knockout_1.observable)();
+    if (typeof localStorage === 'undefined') {
+        return q;
+    }
     q.subscribe(newVal => {
         localStorage.setItem(globalName, JSON.stringify((0, utils_1.toJSON)(newVal)));
     });
