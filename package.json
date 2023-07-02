@@ -1,7 +1,8 @@
 {
   "name": "peers-kore",
   "version": "0.0.31",
-  "main": "index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "repository": "https://github.com/mark-archer/kore",
   "author": "Mark Archer <mark_archer@live.com>",
   "license": "MIT",
