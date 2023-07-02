@@ -96,6 +96,9 @@ export function useOnScreen(ref) {
 
 export function persistentValue<T>(initialValue: T, globalName: string): ko.Observable<T> {
   let q = observable<T>();
+  if (typeof localStorage === 'undefined') {
+    return q;
+  }
   q.subscribe(newVal => {
     localStorage.setItem(globalName, JSON.stringify(toJSON(newVal)))
   })
