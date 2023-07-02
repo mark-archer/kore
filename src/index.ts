@@ -11,5 +11,5 @@ export * from "./kore/typeahead-fk"
 export * from "./kore/typeahead"
 export * from "./orm"
 
-export * as hooks from "./kore/kore-hooks"
+export * as hooks from "./kore/hooks"
 export * as orm from "./orm"

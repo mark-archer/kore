@@ -2,7 +2,7 @@ import { computed, isSubscribable, Observable, unwrap } from 'knockout';
 import React, { useRef, useState } from 'react';
 import _, { isNumber, sumBy } from 'lodash';
 import { camelCaseToSpaces, moneyFormatter } from '../utils';
-import { persistentValue, useObservable, useObservableArrayState } from './kore-hooks';
+import { persistentValue, useObservable, useObservableArrayState } from './hooks';
 import { IField } from '../orm/collection';
 import { IDoc } from '../orm/doc';
 import { TypeaheadFK } from './typeahead-fk'

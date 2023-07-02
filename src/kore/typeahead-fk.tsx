@@ -3,7 +3,7 @@ import { Collection } from '../orm/collection';
 import { IDoc } from '../orm/doc';
 import { Typeahead } from './typeahead';
 import { observable, Observable, ObservableArray } from 'knockout';
-import { useObservable } from './kore-hooks';
+import { useObservable } from './hooks';
 import { camelCaseToSpaces } from '../utils';
 import { IDatagridField } from './datagrid';
 

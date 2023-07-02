@@ -1,6 +1,6 @@
 import { isSubscribable, MaybeObservable, observableArray, ObservableArray, unwrap } from 'knockout';
 import React, { useState } from 'react';
-import { useObservable, useObservableState } from './kore-hooks';
+import { useObservable, useObservableState } from './hooks';
 import { Collection, IField } from '../orm/collection';
 import { IDoc } from '../orm/doc';
 import { Datagrid, IDatagridField } from './datagrid';

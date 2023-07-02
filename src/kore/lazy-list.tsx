@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { useObservable } from './kore-hooks';
+import { useObservable } from './hooks';
 import { observable, observableArray } from 'knockout';
 
 interface IProps<T> {

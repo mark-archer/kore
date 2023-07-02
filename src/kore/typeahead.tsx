@@ -1,5 +1,5 @@
 import React from 'react'
-import { useObservable } from './kore-hooks';
+import { useObservable } from './hooks';
 import Select from 'react-select'
 import AsyncSelect from 'react-select/async';
 import _ from 'lodash';

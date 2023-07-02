@@ -6,7 +6,7 @@ import { Collection } from '../orm/collection';
 import { IDoc } from '../orm/doc';
 import { Autogrid } from './autogrid';
 import { IDatagridField } from './datagrid';
-import { useObservable, useSubscription } from './kore-hooks';
+import { useObservable, useSubscription } from './hooks';
 
 interface IProps<T> {
   collection: Collection<T>
