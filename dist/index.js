@@ -38,6 +38,7 @@ __exportStar(require("./kore/sortable-list"), exports);
 __exportStar(require("./kore/typeahead-fk"), exports);
 __exportStar(require("./kore/typeahead"), exports);
 __exportStar(require("./orm"), exports);
+__exportStar(require("./kore/hooks"), exports);
 exports.hooks = __importStar(require("./kore/hooks"));
 exports.orm = __importStar(require("./orm"));
 //# sourceMappingURL=index.js.map
