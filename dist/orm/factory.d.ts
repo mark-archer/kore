@@ -1,9 +1,10 @@
-import { Collection, IDataSource, IEntity } from "./collection";
+import { Collection, IDataSource, IEntity, IField } from "./collection";
 import { Runtype } from 'runtypes';
 export declare const config: {
     RId: Runtype<unknown>;
     dataSourceFactory: <T = any>(entity: IEntity) => IDataSource<T>;
     entities: Record<string, IEntity>;
+    defaultPrimaryKey: IField;
 };
 export declare function pluralize(name: string): string;
 export declare function singular(name: string): string;

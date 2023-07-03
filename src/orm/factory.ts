@@ -1,4 +1,4 @@
-import { Collection, FieldType, IDataSource, IEntity } from "./collection"
+import { Collection, FieldType, IDataSource, IEntity, IField } from "./collection"
 
 import {
   Boolean as RBoolean,
@@ -18,7 +18,8 @@ export const config = {
   dataSourceFactory: function<T = any>(entity: IEntity): IDataSource<T> {
     throw new Error("peers-kore orm `factory.config.dataSourceFactory` function needs to be set before types can be generated and imported");
   },
-  entities: {} as Record<string, IEntity>
+  entities: {} as Record<string, IEntity>,
+  defaultPrimaryKey: { name: "id", dataType: "string" } as IField,
 }
 
 const fileHeader = `
@@ -42,6 +43,9 @@ async function genIType(entity: IEntity) {
     code += `\n`
   }
   code += `export interface I${entity.name} ${entity.extends ? `extends I${entity.extends.name}` : ''} {`;
+  if (!entity.extends) {
+    code += `\n  ${entity.primaryKey || config.defaultPrimaryKey}`
+  }
   for (const col of entity.fields) {
     code += `\n  ${col.name}${col.optional ? '?' : ''}: ${colTypeToTypescriptType(col.dataType)}`
   }

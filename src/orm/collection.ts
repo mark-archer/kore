@@ -2,6 +2,7 @@
 import { Observable, observable, observableArray, ObservableArray } from 'knockout';
 import { IDoc, newDoc } from './doc';
 import { IObjectMatch, objectMatch } from '../utils';
+import { config } from './factory';
 
 export interface IEntity {
   id?: string
@@ -45,8 +46,6 @@ export interface IDataSource<T> {
 	remove(data: T): Promise<boolean>
 }
 
-export let defaultPrimaryKey: IField = { name: "id", dataType: "string" };
-
 export const collections: Collection<any>[] = [];
 
 export class Collection<T> {
@@ -75,7 +74,7 @@ export class Collection<T> {
 			_entity = _entity.extends;
 		}
 
-		this.primaryKey = primaryKey ?? defaultPrimaryKey
+		this.primaryKey = primaryKey ?? config.defaultPrimaryKey;
 
 		// set fkCollection for any fkFields that reference this collection
 		for (const collection of collections) {

@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Collection = exports.collections = exports.defaultPrimaryKey = void 0;
+exports.Collection = exports.collections = void 0;
 const knockout_1 = require("knockout");
 const doc_1 = require("./doc");
 const utils_1 = require("../utils");
-exports.defaultPrimaryKey = { name: "id", dataType: "string" };
+const factory_1 = require("./factory");
 exports.collections = [];
 class Collection {
     constructor(entity, validate, dataSource, primaryKey) {
@@ -42,7 +42,7 @@ class Collection {
             }
             _entity = _entity.extends;
         }
-        this.primaryKey = primaryKey !== null && primaryKey !== void 0 ? primaryKey : exports.defaultPrimaryKey;
+        this.primaryKey = primaryKey !== null && primaryKey !== void 0 ? primaryKey : factory_1.config.defaultPrimaryKey;
         // set fkCollection for any fkFields that reference this collection
         for (const collection of exports.collections) {
             for (const field of collection.fields) {

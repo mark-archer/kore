@@ -33,7 +33,6 @@ export interface IDataSource<T> {
     save(data: T): Promise<T>;
     remove(data: T): Promise<boolean>;
 }
-export declare let defaultPrimaryKey: IField;
 export declare const collections: Collection<any>[];
 export declare class Collection<T> {
     readonly entity: IEntity;
