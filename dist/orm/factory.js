@@ -34,7 +34,8 @@ async function genIType(entity) {
     }
     code += `export interface I${entity.name} ${entity.extends ? `extends I${entity.extends.name}` : ''} {`;
     if (!entity.extends) {
-        code += `\n  ${entity.primaryKey || exports.config.defaultPrimaryKey}`;
+        const col = entity.primaryKey || exports.config.defaultPrimaryKey;
+        code += `\n  ${col.name}${col.optional ? '?' : ''}: ${colTypeToTypescriptType(col.dataType)}`;
     }
     for (const col of entity.fields) {
         code += `\n  ${col.name}${col.optional ? '?' : ''}: ${colTypeToTypescriptType(col.dataType)}`;
