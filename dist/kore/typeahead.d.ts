@@ -6,7 +6,6 @@ interface IProps<T> {
     value?: MaybeObservable<T>;
     displayField?: string | ((x: T) => string);
     minLength?: number;
-    onChange?: (value: T[]) => any;
     afterChange?: (value: T) => any;
     placeholder?: string;
     innerRef?: any;

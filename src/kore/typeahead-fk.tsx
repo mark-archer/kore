@@ -17,6 +17,7 @@ interface IProps<T>{
   source?: (text) => Promise<IDoc<T>[]>
   dontLoadEmptyString?: boolean
   dataGridColumn?: IDatagridField<T>
+  afterChange?: (value: T) => any  
 }
 
 const supportTableEntries: { [key: string]: ObservableArray<IDoc<unknown>> } = {};
@@ -118,6 +119,9 @@ export function TypeaheadFK<T>(props: IProps<T>) {
         if (value?.primaryKey() !== fkId) {
           setDoc(value);
           setFkId(value?.primaryKey() as string);
+        }
+        if (props.afterChange) {
+          props.afterChange(value)
         }
       }}
       dontLoadEmptyString={props.dontLoadEmptyString}

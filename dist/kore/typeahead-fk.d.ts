@@ -13,6 +13,7 @@ interface IProps<T> {
     source?: (text: any) => Promise<IDoc<T>[]>;
     dontLoadEmptyString?: boolean;
     dataGridColumn?: IDatagridField<T>;
+    afterChange?: (value: T) => any;
 }
 export declare function TypeaheadFK<T>(props: IProps<T>): JSX.Element;
 export {};

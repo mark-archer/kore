@@ -112,6 +112,9 @@ function TypeaheadFK(props) {
                 setDoc(value);
                 setFkId(value === null || value === void 0 ? void 0 : value.primaryKey());
             }
+            if (props.afterChange) {
+                props.afterChange(value);
+            }
         }, dontLoadEmptyString: props.dontLoadEmptyString }));
 }
 exports.TypeaheadFK = TypeaheadFK;
