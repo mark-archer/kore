@@ -16,6 +16,7 @@ export function Input(props: IProps) {
     }
     setValue(_value);
   }
+  // TODO deal with 'checked` property in addition to 'value'
   return (
     <input onChange={onChange} type={type} {...props} value={value}  />
   )

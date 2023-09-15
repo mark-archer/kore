@@ -114,7 +114,7 @@ export class Collection<T> {
 		if (!data.type) {
 			data.type = this.entity.id || this.entityName;
 		}
-		let isNew = !data.id;
+		let isNew = !Boolean(data[this.primaryKey.name]);
 		// set default values
 		[...this.fields, this.primaryKey].forEach(c => {
 			if (data[c.name] === undefined && c.defaultValue !== undefined) {
