@@ -44,6 +44,9 @@ async function genIType(entity) {
     return code;
 }
 function pluralize(name) {
+    // if (name.endsWith('entry')) {
+    //   return name.substring(0, name.length-2) + 'ies'
+    // }
     if (name.endsWith('s')) {
         return name + 'es';
     }

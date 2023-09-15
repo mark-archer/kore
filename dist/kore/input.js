@@ -17,6 +17,7 @@ function Input(props) {
         }
         setValue(_value);
     }
+    // TODO deal with 'checked` property in addition to 'value'
     return (react_1.default.createElement("input", Object.assign({ onChange: onChange, type: type }, props, { value: value })));
 }
 exports.Input = Input;
