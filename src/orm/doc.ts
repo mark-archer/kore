@@ -136,14 +136,14 @@ export function newDoc<T>(
 	const fieldNames = uniq([...columns.map(c => c.name), ...Object.keys(data)]);
 	fieldNames.forEach(fieldName => {
 		const fieldQ = observable(data[fieldName]);
-		fieldQ.subscribe(() => doc.q(doc.q() + 1));
+		fieldQ.subscribe(() => {
+			data[fieldName] = fieldQ();
+			doc.q(doc.q() + 1);
+		});
 		doc.qs[fieldName] = fieldQ;
 		Object.defineProperty(doc, fieldName, {
 			get: () => fieldQ(),
-			set: value => {
-				data[fieldName] = value;
-				return fieldQ(value)
-			}
+			set: value => fieldQ(value)
 		});
 	});
 

@@ -114,14 +114,14 @@ function newDoc(data = {}, collection) {
     const fieldNames = (0, lodash_1.uniq)([...columns.map(c => c.name), ...Object.keys(data)]);
     fieldNames.forEach(fieldName => {
         const fieldQ = (0, knockout_1.observable)(data[fieldName]);
-        fieldQ.subscribe(() => doc.q(doc.q() + 1));
+        fieldQ.subscribe(() => {
+            data[fieldName] = fieldQ();
+            doc.q(doc.q() + 1);
+        });
         doc.qs[fieldName] = fieldQ;
         Object.defineProperty(doc, fieldName, {
             get: () => fieldQ(),
-            set: value => {
-                data[fieldName] = value;
-                return fieldQ(value);
-            }
+            set: value => fieldQ(value)
         });
     });
     return doc;
