@@ -115,11 +115,13 @@ function newDoc(data = {}, collection) {
     fieldNames.forEach(fieldName => {
         const fieldQ = (0, knockout_1.observable)(data[fieldName]);
         fieldQ.subscribe(() => doc.q(doc.q() + 1));
-        // @ts-ignore
         doc.qs[fieldName] = fieldQ;
         Object.defineProperty(doc, fieldName, {
             get: () => fieldQ(),
-            set: value => fieldQ(value)
+            set: value => {
+                data[fieldName] = value;
+                return fieldQ(value);
+            }
         });
     });
     return doc;

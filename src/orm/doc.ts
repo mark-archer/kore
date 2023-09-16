@@ -137,11 +137,13 @@ export function newDoc<T>(
 	fieldNames.forEach(fieldName => {
 		const fieldQ = observable(data[fieldName]);
 		fieldQ.subscribe(() => doc.q(doc.q() + 1));
-		// @ts-ignore
 		doc.qs[fieldName] = fieldQ;
 		Object.defineProperty(doc, fieldName, {
 			get: () => fieldQ(),
-			set: value => fieldQ(value)
+			set: value => {
+				data[fieldName] = value;
+				return fieldQ(value)
+			}
 		});
 	});
 
