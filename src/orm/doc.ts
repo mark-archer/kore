@@ -1,13 +1,13 @@
 import { Observable, observable } from 'knockout';
-import { Record as RObject } from 'runtypes';
-import { Collection } from './collection';
+import { Collection, IField } from './collection';
+import { uniq } from 'lodash';
 
 
-export type IDoc<T> = {	
-  load: (objOrId?) => Promise<IDoc<T>>
+export type IDoc<T> = {
+	load: (objOrId?) => Promise<IDoc<T>>
 	save: () => Promise<IDoc<T>>
-  delete: () => Promise<void>
-  toJS: () => T
+	delete: () => Promise<void>
+	toJS: () => T
 	validate: () => T
 	validationError: Observable<any>
 	collection: Collection<T>
@@ -20,24 +20,40 @@ export type IDoc<T> = {
 	isNew: boolean
 	hasChanges: () => boolean
 } & {
-	[key in keyof T]: T[key];
-}
+		[key in keyof T]: T[key];
+	}
 
 
 // TODO changing this to a class would probably be a significant performance boost
 //			because each one of those functions would only be instantiated once instead of for every doc
 //			NOTE: I gave this a shot and found out indexing fields is clear cut and the `this` binding becomes a problem
 export function newDoc<T>(
-	collection: Collection<T>,
-	data = {}
-): 
-	IDoc<T> 
-{
+	data = {},
+	collection?: Collection<T>,
+):
+	IDoc<T> {
+	if (!collection) {
+		const fields: IField[] = Object.keys(data).map(name => {
+			const dataType = typeof data[name];
+			if (dataType === 'bigint' || dataType === 'function' || dataType === 'object' || dataType === 'symbol' || dataType === 'undefined') {
+				throw new Error(`Unsupported type for field: ${name}: ${dataType}`);
+			}
+			return {
+				name,
+				dataType,
+			}
+		})
+		collection = new Collection({
+			name: 'AnonymousType',
+			fields,
+		}, null, null);
+	}
+
 	const columns = [collection.primaryKey, ...collection.fields];
 	// @ts-ignore
 	const doc: IDoc<T> = {
 		isNew: true,
-		collection, 
+		collection,
 		q: observable(0),
 		qs: {},
 		load: async (objOrId?: any) => {
@@ -62,7 +78,7 @@ export function newDoc<T>(
 			return doc;
 		},
 		toJS: () => {
-			const _data = {...data} as any;
+			const _data = { ...data } as any;
 			columns.forEach(col => {
 				const value = doc[col.name];
 				if (typeof value !== 'function') {
@@ -72,8 +88,9 @@ export function newDoc<T>(
 			return _data;
 		},
 		save: async () => {
-			const data = doc.validate();
-			const src: any = await collection.save(data)
+			let _data = doc.validate();
+			_data = { ...data, ..._data };
+			const src: any = await collection.save(_data);
 			return doc.load(src).then(() => {
 				doc.isNew = false;
 				doc.q(0);
@@ -112,17 +129,18 @@ export function newDoc<T>(
 		hasChanges: () => doc.isNew || doc.q() !== 0,
 	}
 
-	columns.forEach(col => {
-		const fieldQ = observable(data[col.name]);
+	const fieldNames = uniq([...columns.map(c => c.name), ...Object.keys(data)])
+	fieldNames.forEach(fieldName => {
+		const fieldQ = observable(data[fieldName]);
 		fieldQ.subscribe(() => doc.q(doc.q() + 1));
 		// @ts-ignore
-		doc.qs[col.name] = fieldQ;
-		Object.defineProperty(doc, col.name, {
+		doc.qs[fieldName] = fieldQ;
+		Object.defineProperty(doc, fieldName, {
 			get: () => fieldQ(),
 			set: value => fieldQ(value)
 		});
-	});	
-	
+	});
+
 	return doc;
 }
 

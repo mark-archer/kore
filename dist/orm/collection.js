@@ -93,7 +93,7 @@ class Collection {
                 }
             }
         });
-        const doc = (0, doc_1.newDoc)(this, data);
+        const doc = (0, doc_1.newDoc)(data, this);
         doc.isNew = isNew;
         return doc;
     }

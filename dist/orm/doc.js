@@ -2,10 +2,28 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.newDoc = void 0;
 const knockout_1 = require("knockout");
+const collection_1 = require("./collection");
+const lodash_1 = require("lodash");
 // TODO changing this to a class would probably be a significant performance boost
 //			because each one of those functions would only be instantiated once instead of for every doc
 //			NOTE: I gave this a shot and found out indexing fields is clear cut and the `this` binding becomes a problem
-function newDoc(collection, data = {}) {
+function newDoc(data = {}, collection) {
+    if (!collection) {
+        const fields = Object.keys(data).map(name => {
+            const dataType = typeof data[name];
+            if (dataType === 'bigint' || dataType === 'function' || dataType === 'object' || dataType === 'symbol' || dataType === 'undefined') {
+                throw new Error(`Unsupported type for field: ${name}: ${dataType}`);
+            }
+            return {
+                name,
+                dataType,
+            };
+        });
+        collection = new collection_1.Collection({
+            name: 'AnonymousType',
+            fields,
+        }, null, null);
+    }
     const columns = [collection.primaryKey, ...collection.fields];
     // @ts-ignore
     const doc = {
@@ -45,8 +63,9 @@ function newDoc(collection, data = {}) {
             return _data;
         },
         save: async () => {
-            const data = doc.validate();
-            const src = await collection.save(data);
+            let _data = doc.validate();
+            _data = Object.assign(Object.assign({}, data), _data);
+            const src = await collection.save(_data);
             return doc.load(src).then(() => {
                 doc.isNew = false;
                 doc.q(0);
@@ -88,12 +107,13 @@ function newDoc(collection, data = {}) {
         primaryKey: () => doc[collection.primaryKey.name],
         hasChanges: () => doc.isNew || doc.q() !== 0,
     };
-    columns.forEach(col => {
-        const fieldQ = (0, knockout_1.observable)(data[col.name]);
+    const fieldNames = (0, lodash_1.uniq)([...columns.map(c => c.name), ...Object.keys(data)]);
+    fieldNames.forEach(fieldName => {
+        const fieldQ = (0, knockout_1.observable)(data[fieldName]);
         fieldQ.subscribe(() => doc.q(doc.q() + 1));
         // @ts-ignore
-        doc.qs[col.name] = fieldQ;
-        Object.defineProperty(doc, col.name, {
+        doc.qs[fieldName] = fieldQ;
+        Object.defineProperty(doc, fieldName, {
             get: () => fieldQ(),
             set: value => fieldQ(value)
         });

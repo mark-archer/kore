@@ -19,4 +19,4 @@ export type IDoc<T> = {
 } & {
     [key in keyof T]: T[key];
 };
-export declare function newDoc<T>(collection: Collection<T>, data?: {}): IDoc<T>;
+export declare function newDoc<T>(data?: {}, collection?: Collection<T>): IDoc<T>;

@@ -127,7 +127,7 @@ export class Collection<T> {
 				}
 			}
 		})
-		const doc = newDoc(this, data);
+		const doc = newDoc(data, this);
 		doc.isNew = isNew;
 		return doc;
 	}
