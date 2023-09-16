@@ -57,6 +57,7 @@ export function newDoc<T>(
 		q: observable(0),
 		qs: {},
 		load: async (objOrId?: any) => {
+			let loadedFromDb = false;
 			if (typeof objOrId !== 'object') {
 				const id: string = objOrId || doc[collection.primaryKey.name];
 				if (!id) {
@@ -66,14 +67,17 @@ export function newDoc<T>(
 				if (!objOrId) {
 					throw new Error(`Could not find doc for ${collection.entityName}:${id}`);
 				}
+				loadedFromDb = true;
+			}
+			const fieldNames = uniq([...columns.map(c => c.name), ...Object.keys(data), ...Object.keys(objOrId)]);
+			for (const fieldName of fieldNames) {
+				if (objOrId[fieldName] !== undefined) {
+					doc[fieldName] = objOrId[fieldName];
+				}
+			}
+			if (loadedFromDb) {
 				doc.isNew = false;
 				doc.q(0);
-			}
-			for (const col of columns) {
-				if (objOrId[col.name] !== undefined) {
-					// @ts-ignore
-					doc[col.name] = objOrId[col.name];
-				}
 			}
 			return doc;
 		},
@@ -129,7 +133,7 @@ export function newDoc<T>(
 		hasChanges: () => doc.isNew || doc.q() !== 0,
 	}
 
-	const fieldNames = uniq([...columns.map(c => c.name), ...Object.keys(data)])
+	const fieldNames = uniq([...columns.map(c => c.name), ...Object.keys(data)]);
 	fieldNames.forEach(fieldName => {
 		const fieldQ = observable(data[fieldName]);
 		fieldQ.subscribe(() => doc.q(doc.q() + 1));

@@ -32,6 +32,7 @@ function newDoc(data = {}, collection) {
         q: (0, knockout_1.observable)(0),
         qs: {},
         load: async (objOrId) => {
+            let loadedFromDb = false;
             if (typeof objOrId !== 'object') {
                 const id = objOrId || doc[collection.primaryKey.name];
                 if (!id) {
@@ -41,14 +42,17 @@ function newDoc(data = {}, collection) {
                 if (!objOrId) {
                     throw new Error(`Could not find doc for ${collection.entityName}:${id}`);
                 }
+                loadedFromDb = true;
+            }
+            const fieldNames = (0, lodash_1.uniq)([...columns.map(c => c.name), ...Object.keys(data), ...Object.keys(objOrId)]);
+            for (const fieldName of fieldNames) {
+                if (objOrId[fieldName] !== undefined) {
+                    doc[fieldName] = objOrId[fieldName];
+                }
+            }
+            if (loadedFromDb) {
                 doc.isNew = false;
                 doc.q(0);
-            }
-            for (const col of columns) {
-                if (objOrId[col.name] !== undefined) {
-                    // @ts-ignore
-                    doc[col.name] = objOrId[col.name];
-                }
             }
             return doc;
         },
