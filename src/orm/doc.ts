@@ -143,7 +143,10 @@ export function newDoc<T>(
 		doc.qs[fieldName] = fieldQ;
 		Object.defineProperty(doc, fieldName, {
 			get: () => fieldQ(),
-			set: value => fieldQ(value)
+			set: value => {
+				fieldQ(value);
+				data[fieldName] = value;
+			}
 		});
 	});
 

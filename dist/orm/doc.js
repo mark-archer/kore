@@ -121,7 +121,10 @@ function newDoc(data = {}, collection) {
         doc.qs[fieldName] = fieldQ;
         Object.defineProperty(doc, fieldName, {
             get: () => fieldQ(),
-            set: value => fieldQ(value)
+            set: value => {
+                fieldQ(value);
+                data[fieldName] = value;
+            }
         });
     });
     return doc;
