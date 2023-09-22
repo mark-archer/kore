@@ -57,27 +57,15 @@ function newDoc(data = {}, collection) {
             return doc;
         },
         toJS: () => {
-            const _data = Object.assign({}, data);
-            columns.forEach(col => {
+            const _data = (0, lodash_1.cloneDeep)(data);
+            // this saves any new fields that were added to the doc
+            for (const col of columns) {
                 const value = doc[col.name];
-                if (typeof value !== 'function') {
+                if (value && typeof value !== 'function') {
                     _data[col.name] = value;
                 }
-            });
+            }
             return _data;
-        },
-        save: async () => {
-            let _data = doc.validate();
-            _data = Object.assign(Object.assign({}, data), _data);
-            const src = await collection.save(_data);
-            return doc.load(src).then(() => {
-                doc.isNew = false;
-                doc.q(0);
-            });
-        },
-        delete: async () => {
-            await collection.remove(doc[collection.primaryKey.name]);
-            return doc;
         },
         validationError: (0, knockout_1.observable)(null),
         validate: () => {
@@ -91,6 +79,18 @@ function newDoc(data = {}, collection) {
                 doc.validationError(err);
                 throw err;
             }
+        },
+        save: async () => {
+            let _data = doc.validate();
+            const src = await collection.save(_data);
+            return doc.load(src).then(() => {
+                doc.isNew = false;
+                doc.q(0);
+            });
+        },
+        delete: async () => {
+            await collection.remove(doc[collection.primaryKey.name]);
+            return doc;
         },
         displayValue: () => {
             var _a;
