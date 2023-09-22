@@ -1,6 +1,6 @@
 import { Observable, observable } from 'knockout';
 import { Collection, IField } from './collection';
-import { uniq } from 'lodash';
+import { uniq, cloneDeep } from 'lodash';
 
 
 export type IDoc<T> = {
@@ -82,27 +82,15 @@ export function newDoc<T>(
 			return doc;
 		},
 		toJS: () => {
-			const _data = { ...data } as any;
-			columns.forEach(col => {
+			const _data = cloneDeep(data);
+			// this saves any new fields that were added to the doc
+			for (const col of columns) {
 				const value = doc[col.name];
-				if (typeof value !== 'function') {
+				if (value && typeof value !== 'function') {
 					_data[col.name] = value;
 				}
-			});
+			}
 			return _data;
-		},
-		save: async () => {
-			let _data = doc.validate();
-			_data = { ...data, ..._data };
-			const src: any = await collection.save(_data);
-			return doc.load(src).then(() => {
-				doc.isNew = false;
-				doc.q(0);
-			});
-		},
-		delete: async () => {
-			await collection.remove(doc[collection.primaryKey.name])
-			return doc;
 		},
 		validationError: observable(null),
 		validate: () => {
@@ -115,6 +103,18 @@ export function newDoc<T>(
 				doc.validationError(err);
 				throw err;
 			}
+		},
+		save: async () => {
+			let _data = doc.validate();
+			const src: any = await collection.save(_data);
+			return doc.load(src).then(() => {
+				doc.isNew = false;
+				doc.q(0);
+			});
+		},
+		delete: async () => {
+			await collection.remove(doc[collection.primaryKey.name])
+			return doc;
 		},
 		displayValue: () => {
 			let displayValue = collection.entity.displayValue;
