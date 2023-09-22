@@ -44,10 +44,12 @@ function newDoc(data = {}, collection) {
                 }
                 loadedFromDb = true;
             }
-            const fieldNames = (0, lodash_1.uniq)([...columns.map(c => c.name), ...Object.keys(data), ...Object.keys(objOrId)]);
+            const fieldNames = Object.keys(objOrId);
             for (const fieldName of fieldNames) {
                 if (objOrId[fieldName] !== undefined) {
+                    // note that this won't create new observables for fields that weren't in the original data
                     doc[fieldName] = objOrId[fieldName];
+                    data[fieldName] = objOrId[fieldName];
                 }
             }
             if (loadedFromDb) {
@@ -58,22 +60,15 @@ function newDoc(data = {}, collection) {
         },
         toJS: () => {
             const _data = (0, lodash_1.cloneDeep)(data);
-            // this saves any new fields that were added to the doc
-            for (const col of columns) {
-                const value = doc[col.name];
-                if (value && typeof value !== 'function') {
-                    _data[col.name] = value;
-                }
-            }
             return _data;
         },
         validationError: (0, knockout_1.observable)(null),
         validate: () => {
             try {
-                const data = doc.toJS();
-                collection.validate(data);
+                const _data = doc.toJS();
+                collection.validate(_data);
                 doc.validationError(null);
-                return data;
+                return _data;
             }
             catch (err) {
                 doc.validationError(err);
@@ -123,7 +118,7 @@ function newDoc(data = {}, collection) {
             get: () => fieldQ(),
             set: value => {
                 fieldQ(value);
-                data[fieldName] = value;
+                // data[fieldName] = value;
             }
         });
     });
