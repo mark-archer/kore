@@ -66,6 +66,19 @@ function newDoc(data = {}, collection) {
         validate: () => {
             try {
                 const _data = doc.toJS();
+                for (const field of collection.fields) {
+                    if (_data[field.name] === undefined) {
+                        if (typeof field.defaultValue === "function") {
+                            _data[field.name] = field.defaultValue();
+                        }
+                        else if (field.defaultValue !== undefined) {
+                            _data[field.name] = field.defaultValue;
+                        }
+                        else {
+                            _data[field.name] = undefined;
+                        }
+                    }
+                }
                 collection.validate(_data);
                 doc.validationError(null);
                 return _data;
