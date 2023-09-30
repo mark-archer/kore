@@ -60,6 +60,9 @@ function newDoc(data = {}, collection) {
         },
         toJS: () => {
             const _data = (0, lodash_1.cloneDeep)(data);
+            for (const field of collection.fields) {
+                _data[field.name] = doc[field.name];
+            }
             return _data;
         },
         validationError: (0, knockout_1.observable)(null),
@@ -128,10 +131,12 @@ function newDoc(data = {}, collection) {
         });
         doc.qs[fieldName] = fieldQ;
         Object.defineProperty(doc, fieldName, {
-            get: () => fieldQ(),
+            get: () => {
+                return fieldQ();
+            },
             set: value => {
+                data[fieldName] = value;
                 fieldQ(value);
-                // data[fieldName] = value;
             }
         });
     });

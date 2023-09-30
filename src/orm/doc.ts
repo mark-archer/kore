@@ -85,6 +85,9 @@ export function newDoc<T>(
 		},
 		toJS: () => {
 			const _data = cloneDeep(data);
+			for (const field of collection.fields) {
+				_data[field.name] = doc[field.name];
+			}
 			return _data;
 		},
 		validationError: observable(null),
@@ -148,10 +151,12 @@ export function newDoc<T>(
 		});
 		doc.qs[fieldName] = fieldQ;
 		Object.defineProperty(doc, fieldName, {
-			get: () => fieldQ(),
+			get: () => {
+				return fieldQ();
+			},
 			set: value => {
+				data[fieldName] = value;
 				fieldQ(value);
-				// data[fieldName] = value;
 			}
 		});
 	});
