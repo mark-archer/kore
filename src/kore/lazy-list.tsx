@@ -9,6 +9,7 @@ interface IProps<T> {
   filterItems?:(existingItems: T[]) => T[]
   endOfList?: React.ReactNode
   loadingIndicator?: React.ReactNode
+  scrollThreshold?: number | string
 }
 
 export function LazyList<T>(props: IProps<T>) {
@@ -60,6 +61,7 @@ export function LazyList<T>(props: IProps<T>) {
         dataLength={renderItems.length}
         next={loadMore}
         hasMore={!allLoaded}
+        scrollThreshold={props.scrollThreshold}
         loader={
           props.loadingIndicator ??
           <>

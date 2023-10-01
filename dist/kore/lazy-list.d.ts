@@ -5,6 +5,7 @@ interface IProps<T> {
     filterItems?: (existingItems: T[]) => T[];
     endOfList?: React.ReactNode;
     loadingIndicator?: React.ReactNode;
+    scrollThreshold?: number | string;
 }
 export declare function LazyList<T>(props: IProps<T>): JSX.Element;
 export {};

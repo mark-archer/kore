@@ -17,6 +17,7 @@ interface IProps<T> {
   paddingBottom?: string | number
   endOfList?: React.ReactNode
   loadingIndicator?: React.ReactNode
+  scrollThreshold?: string | number
 }
 
 export function LazySortableList<T extends ISortable>(props: IProps<T>) {
@@ -27,6 +28,7 @@ export function LazySortableList<T extends ISortable>(props: IProps<T>) {
       filterItems={props.filterItems}
       endOfList={props.endOfList}
       loadingIndicator={props.loadingIndicator}
+      scrollThreshold={props.scrollThreshold}
       renderItems={items => (
         <SortableList
           items={items}
