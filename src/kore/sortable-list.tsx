@@ -19,6 +19,8 @@ interface ISortableListProps<T extends ISortable> {
   containerProps?: Record<string, any>
   dragHandleClassName?: string
   sortDirection?: 'asc' | 'desc'
+  minHeight?: string | number
+  paddingBottom?: string | number
 }
 
 export class SortableList<T extends ISortable> extends React.Component<ISortableListProps<T>, {}>
@@ -93,7 +95,7 @@ export class SortableList<T extends ISortable> extends React.Component<ISortable
     }
     this.items = items;
     return (
-      <div id={this.listId} style={{ minHeight: "25px" }} {...this.props.containerProps} >
+      <div id={this.listId} style={{ minHeight: this.props.minHeight ?? "25px", paddingBottom: this.props.paddingBottom ?? "10px" }} {...this.props.containerProps} >
         {items.map(item => this.props.renderItem({ item, taskListId: this.listId, sortHandle: this.sortHandle.substring(1) }))}
       </div>
     )

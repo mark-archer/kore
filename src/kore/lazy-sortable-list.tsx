@@ -4,7 +4,7 @@ import { ISortable, SortableList } from './sortable-list';
 
 interface IProps<T> {
   loadMore: (existingItems: T[]) => Promise<T[]>
-  filterItems?:(existingItems: T[]) => T[]
+  filterItems?: (existingItems: T[]) => T[]
   renderItem: (props: { item: T, taskListId: string, sortHandle: string }) => React.ReactNode,
   listsGroup?: string
   onAdd?: ((itemId: string, sortOrder: number) => any),
@@ -13,14 +13,20 @@ interface IProps<T> {
   containerProps?: Record<string, any>
   dragHandleClassName?: string
   sortDirection?: 'asc' | 'desc'
+  minHeight?: string | number
+  paddingBottom?: string | number
+  endOfList?: React.ReactNode
+  loadingIndicator?: React.ReactNode
 }
 
 export function LazySortableList<T extends ISortable>(props: IProps<T>) {
-  
+
   return (
     <LazyList
       loadMore={props.loadMore}
       filterItems={props.filterItems}
+      endOfList={props.endOfList}
+      loadingIndicator={props.loadingIndicator}
       renderItems={items => (
         <SortableList
           items={items}
@@ -31,7 +37,9 @@ export function LazySortableList<T extends ISortable>(props: IProps<T>) {
           onUpdate={props.onUpdate}
           hidden={props.hidden}
           containerProps={props.containerProps}
-          dragHandleClassName={props.dragHandleClassName}          
+          dragHandleClassName={props.dragHandleClassName}
+          minHeight={props.minHeight}
+          paddingBottom={props.paddingBottom}
         />
       )}
     />

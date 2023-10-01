@@ -20,6 +20,8 @@ interface ISortableListProps<T extends ISortable> {
     containerProps?: Record<string, any>;
     dragHandleClassName?: string;
     sortDirection?: 'asc' | 'desc';
+    minHeight?: string | number;
+    paddingBottom?: string | number;
 }
 export declare class SortableList<T extends ISortable> extends React.Component<ISortableListProps<T>, {}> {
     constructor(props: any);

@@ -63,6 +63,7 @@ class SortableList extends react_1.default.Component {
         });
     }
     render() {
+        var _a, _b;
         let items = (0, knockout_1.unwrap)(this.props.items);
         if (this.props.sortDirection === 'asc') {
             items = (0, lodash_1.sortBy)(items, i => { var _a; return (_a = i.sortOrder) !== null && _a !== void 0 ? _a : -Infinity; });
@@ -71,7 +72,7 @@ class SortableList extends react_1.default.Component {
             items = (0, lodash_1.sortBy)(items, i => { var _a; return (_a = -i.sortOrder) !== null && _a !== void 0 ? _a : Infinity; });
         }
         this.items = items;
-        return (react_1.default.createElement("div", Object.assign({ id: this.listId, style: { minHeight: "25px" } }, this.props.containerProps), items.map(item => this.props.renderItem({ item, taskListId: this.listId, sortHandle: this.sortHandle.substring(1) }))));
+        return (react_1.default.createElement("div", Object.assign({ id: this.listId, style: { minHeight: (_a = this.props.minHeight) !== null && _a !== void 0 ? _a : "25px", paddingBottom: (_b = this.props.paddingBottom) !== null && _b !== void 0 ? _b : "10px" } }, this.props.containerProps), items.map(item => this.props.renderItem({ item, taskListId: this.listId, sortHandle: this.sortHandle.substring(1) }))));
     }
 }
 exports.SortableList = SortableList;

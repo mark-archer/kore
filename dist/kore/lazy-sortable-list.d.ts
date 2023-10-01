@@ -18,6 +18,10 @@ interface IProps<T> {
     containerProps?: Record<string, any>;
     dragHandleClassName?: string;
     sortDirection?: 'asc' | 'desc';
+    minHeight?: string | number;
+    paddingBottom?: string | number;
+    endOfList?: React.ReactNode;
+    loadingIndicator?: React.ReactNode;
 }
 export declare function LazySortableList<T extends ISortable>(props: IProps<T>): JSX.Element;
 export {};

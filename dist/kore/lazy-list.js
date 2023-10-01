@@ -32,6 +32,7 @@ const react_infinite_scroll_component_1 = __importDefault(require("react-infinit
 const hooks_1 = require("./hooks");
 const knockout_1 = require("knockout");
 function LazyList(props) {
+    var _a, _b;
     const [itemsObsAry] = (0, react_1.useState)(() => (0, knockout_1.observableArray)([]));
     const [items] = (0, hooks_1.useObservable)(itemsObsAry);
     const [allLoaded, setAllLoaded] = (0, react_1.useState)(false);
@@ -69,9 +70,9 @@ function LazyList(props) {
             marginLeft: '10px',
             // flexDirection: 'column-reverse',
         } },
-        react_1.default.createElement(react_infinite_scroll_component_1.default, { dataLength: renderItems.length, next: loadMore, hasMore: !allLoaded, 
-            // hasMore={true}
-            loader: react_1.default.createElement("div", null, "loading..."), endMessage: react_1.default.createElement(react_1.default.Fragment, null,
+        react_1.default.createElement(react_infinite_scroll_component_1.default, { dataLength: renderItems.length, next: loadMore, hasMore: !allLoaded, loader: (_a = props.loadingIndicator) !== null && _a !== void 0 ? _a : react_1.default.createElement(react_1.default.Fragment, null,
+                react_1.default.createElement("div", { className: "d-flex justify-content-center" },
+                    react_1.default.createElement("div", null, "loading..."))), endMessage: (_b = props.endOfList) !== null && _b !== void 0 ? _b : react_1.default.createElement(react_1.default.Fragment, null,
                 react_1.default.createElement("div", { className: "d-flex justify-content-center" },
                     react_1.default.createElement("i", null, "end of list"))) }, props.renderItems(renderItems))));
 }

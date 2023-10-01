@@ -7,6 +7,8 @@ interface IProps<T> {
   loadMore: (existingItems: T[]) => Promise<T[]>
   renderItems: (items: T[]) => React.ReactNode
   filterItems?:(existingItems: T[]) => T[]
+  endOfList?: React.ReactNode
+  loadingIndicator?: React.ReactNode
 }
 
 export function LazyList<T>(props: IProps<T>) {
@@ -58,9 +60,16 @@ export function LazyList<T>(props: IProps<T>) {
         dataLength={renderItems.length}
         next={loadMore}
         hasMore={!allLoaded}
-        // hasMore={true}
-        loader={<div>loading...</div>}
+        loader={
+          props.loadingIndicator ??
+          <>
+            <div className="d-flex justify-content-center">
+              <div>loading...</div>
+            </div>
+          </>
+        }
         endMessage={
+          props.endOfList ??
           <>
             <div className="d-flex justify-content-center">
               <i>end of list</i>
