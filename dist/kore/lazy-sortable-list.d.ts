@@ -23,6 +23,7 @@ interface IProps<T> {
     endOfList?: React.ReactNode;
     loadingIndicator?: React.ReactNode;
     scrollThreshold?: string | number;
+    lazyListStyle?: React.CSSProperties;
 }
 export declare function LazySortableList<T extends ISortable>(props: IProps<T>): JSX.Element;
 export {};

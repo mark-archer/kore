@@ -10,6 +10,7 @@ interface IProps<T> {
   endOfList?: React.ReactNode
   loadingIndicator?: React.ReactNode
   scrollThreshold?: number | string
+  lazyListStyle?: React.CSSProperties
 }
 
 export function LazyList<T>(props: IProps<T>) {
@@ -49,13 +50,14 @@ export function LazyList<T>(props: IProps<T>) {
   return (
     <div
       id="scrollableDiv"
-      style={{
-        // height: '600px',
-        overflow: 'auto',
-        display: 'flex',
-        marginLeft: '10px',
-        // flexDirection: 'column-reverse',
-      }}
+      style={props.lazyListStyle}
+      // style={{
+      //   // height: '600px',
+      //   overflow: 'auto',
+      //   marginLeft: '10px',
+      //   display: 'flex',
+      //   // flexDirection: 'column-reverse',
+      // }}
     >
       <InfiniteScroll
         dataLength={renderItems.length}

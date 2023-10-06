@@ -18,12 +18,14 @@ interface IProps<T> {
   endOfList?: React.ReactNode
   loadingIndicator?: React.ReactNode
   scrollThreshold?: string | number
+  lazyListStyle?: React.CSSProperties
 }
 
 export function LazySortableList<T extends ISortable>(props: IProps<T>) {
 
   return (
     <LazyList
+      lazyListStyle={props.lazyListStyle}
       loadMore={props.loadMore}
       filterItems={props.filterItems}
       endOfList={props.endOfList}
