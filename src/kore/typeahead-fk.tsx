@@ -44,11 +44,8 @@ export function TypeaheadFK<T>(props: IProps<T>) {
   const [fkId, setFkId] = useObservable(props.fkId);
   const [docObs] = useState(() => observable<IDoc<T>>());
   const [doc, setDoc] = useObservable(docObs);
-  useObservable(props.options);
-
+  
   let source = props.source || fkCollection.search;
-    // if we're going to use the default search, limit to first 1000 results to prevent performance problems for large datasets
-    // ((text) => fkCollection.search(text, 1000)); // doing this prevents smart results caching in `typeahead` so this needs to be one fn per collection
 
   let options = props.options;
   const supportTable = supportTables.find(st => st.entityName === fkCollection.entityName);
@@ -60,31 +57,22 @@ export function TypeaheadFK<T>(props: IProps<T>) {
     source = undefined;
   }
 
+  useObservable(options);
+
   // look up doc with fkId
   useEffect(() => {
     if (doc?.primaryKey() === fkId) return;
     if (options) {
-      const opt = options().find(o => o.primaryKey() === fkId);
-      setDoc(opt);
-      return;
-    }
-    // get all values from db for these supportTables
-    if (supportTables.map(t => t.entityName).includes(fkCollection.entityName)) {
       // get doc from list of support table entries, if support table entries are loaded, wait for load
-      const _doc = supportTableEntries[fkCollection.entityName]().find(i => i.primaryKey() === fkId) as (IDoc<T> | null)
-      if (_doc) {
-        setDoc(_doc)
-      } else {
-        let sub = supportTableEntries[fkCollection.entityName].subscribe(() => {
-          sub.dispose();
-          const _doc = supportTableEntries[fkCollection.entityName]().find(i => i.primaryKey() === fkId) as IDoc<T>
-          setDoc(_doc);
-        });
-      }
+      const _doc = options().find(i => i.primaryKey() === fkId) as (IDoc<T> | null)
+      setDoc(_doc);
     } else {
       getFkValue(fkCollection, fkId).then(setDoc);
     }
-  }, [fkId, options?.()])
+  }, [
+    fkId, 
+    options?.()?.map(o => o.primaryKey()).join(',') || ''
+  ]);
 
   const displayField = (doc: IDoc<any>) => {
     const displayValue = doc?.displayValue?.();

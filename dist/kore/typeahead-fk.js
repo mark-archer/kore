@@ -45,15 +45,12 @@ function getFkValue(fkCollection, fkId) {
     return pValue;
 }
 function TypeaheadFK(props) {
-    var _a;
+    var _a, _b;
     const { fkCollection } = props;
     const [fkId, setFkId] = (0, hooks_1.useObservable)(props.fkId);
     const [docObs] = (0, react_1.useState)(() => (0, knockout_1.observable)());
     const [doc, setDoc] = (0, hooks_1.useObservable)(docObs);
-    (0, hooks_1.useObservable)(props.options);
     let source = props.source || fkCollection.search;
-    // if we're going to use the default search, limit to first 1000 results to prevent performance problems for large datasets
-    // ((text) => fkCollection.search(text, 1000)); // doing this prevents smart results caching in `typeahead` so this needs to be one fn per collection
     let options = props.options;
     const supportTable = exports.supportTables.find(st => st.entityName === fkCollection.entityName);
     if (!options && supportTable) {
@@ -63,34 +60,23 @@ function TypeaheadFK(props) {
         options = supportTableEntries[fkCollection.entityName];
         source = undefined;
     }
+    (0, hooks_1.useObservable)(options);
     // look up doc with fkId
     (0, react_1.useEffect)(() => {
         if ((doc === null || doc === void 0 ? void 0 : doc.primaryKey()) === fkId)
             return;
         if (options) {
-            const opt = options().find(o => o.primaryKey() === fkId);
-            setDoc(opt);
-            return;
-        }
-        // get all values from db for these supportTables
-        if (exports.supportTables.map(t => t.entityName).includes(fkCollection.entityName)) {
             // get doc from list of support table entries, if support table entries are loaded, wait for load
-            const _doc = supportTableEntries[fkCollection.entityName]().find(i => i.primaryKey() === fkId);
-            if (_doc) {
-                setDoc(_doc);
-            }
-            else {
-                let sub = supportTableEntries[fkCollection.entityName].subscribe(() => {
-                    sub.dispose();
-                    const _doc = supportTableEntries[fkCollection.entityName]().find(i => i.primaryKey() === fkId);
-                    setDoc(_doc);
-                });
-            }
+            const _doc = options().find(i => i.primaryKey() === fkId);
+            setDoc(_doc);
         }
         else {
             getFkValue(fkCollection, fkId).then(setDoc);
         }
-    }, [fkId, options === null || options === void 0 ? void 0 : options()]);
+    }, [
+        fkId,
+        ((_a = options === null || options === void 0 ? void 0 : options()) === null || _a === void 0 ? void 0 : _a.map(o => o.primaryKey()).join(',')) || ''
+    ]);
     const displayField = (doc) => {
         var _a, _b;
         const displayValue = (_a = doc === null || doc === void 0 ? void 0 : doc.displayValue) === null || _a === void 0 ? void 0 : _a.call(doc);
@@ -110,7 +96,7 @@ function TypeaheadFK(props) {
         };
     }
     // show error if fkId not available in options
-    if (fkId && !doc && ((_a = options === null || options === void 0 ? void 0 : options()) === null || _a === void 0 ? void 0 : _a.length)) {
+    if (fkId && !doc && ((_b = options === null || options === void 0 ? void 0 : options()) === null || _b === void 0 ? void 0 : _b.length)) {
         return (react_1.default.createElement("span", null, "selected value not available in options"));
     }
     // wait for doc to be retrieved before rendering the typeahead
