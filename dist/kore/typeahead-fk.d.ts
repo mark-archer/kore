@@ -15,7 +15,7 @@ interface IProps<T> {
     dataGridColumn?: IDatagridField<T>;
     afterChange?: (value: T) => any;
 }
-export declare const supportTables: any[];
+export declare const supportTables: Collection<any>[];
 export declare const fkValueCacheTTL = 1000;
 export declare function TypeaheadFK<T>(props: IProps<T>): JSX.Element;
 export {};

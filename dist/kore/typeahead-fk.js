@@ -55,7 +55,8 @@ function TypeaheadFK(props) {
     // if we're going to use the default search, limit to first 1000 results to prevent performance problems for large datasets
     // ((text) => fkCollection.search(text, 1000)); // doing this prevents smart results caching in `typeahead` so this needs to be one fn per collection
     let options = props.options;
-    if (!options && exports.supportTables.map(t => t.name).includes(fkCollection.entityName)) {
+    const supportTable = exports.supportTables.find(st => st.entityName === fkCollection.entityName);
+    if (!options && supportTable) {
         if (!supportTableEntries[fkCollection.entityName]) {
             supportTableEntries[fkCollection.entityName] = fkCollection.observables.list();
         }
@@ -72,7 +73,7 @@ function TypeaheadFK(props) {
             return;
         }
         // get all values from db for these supportTables
-        if (exports.supportTables.map(t => t.name).includes(fkCollection.entityName)) {
+        if (exports.supportTables.map(t => t.entityName).includes(fkCollection.entityName)) {
             // get doc from list of support table entries, if support table entries are loaded, wait for load
             const _doc = supportTableEntries[fkCollection.entityName]().find(i => i.primaryKey() === fkId);
             if (_doc) {
