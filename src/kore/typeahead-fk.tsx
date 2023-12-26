@@ -21,9 +21,23 @@ interface IProps<T>{
 }
 
 const supportTableEntries: { [key: string]: ObservableArray<IDoc<unknown>> } = {};
-const supportTables = []; //[GLAccountTypes, GLBalanceTypes];
+export const supportTables = []; //[GLAccountTypes, GLBalanceTypes];
 
 const fkColumnValueCache = {} as Record<string, string>;
+
+const fkValueCache = {} as Record<string, Promise<any>>;
+export const fkValueCacheTTL = 1000;
+
+function getFkValue<T>(fkCollection: Collection<T>, fkId: any): Promise<T> {
+  const cacheId = `${fkCollection.entityName}-${fkId}`;
+  let pValue = fkValueCache[cacheId];
+  if (!pValue) {
+    pValue = fkCollection.get(fkId);
+    fkValueCache[cacheId] = pValue;
+    setTimeout(() => delete fkValueCache[cacheId], fkValueCacheTTL);
+  }
+  return pValue;
+}
 
 export function TypeaheadFK<T>(props: IProps<T>) {
   const { fkCollection } = props;
@@ -55,7 +69,6 @@ export function TypeaheadFK<T>(props: IProps<T>) {
     }
     // get all values from db for these supportTables
     if (supportTables.map(t => t.name).includes(fkCollection.entityName)) {
-
       // get doc from list of support table entries, if support table entries are loaded, wait for load
       const _doc = supportTableEntries[fkCollection.entityName]().find(i => i.primaryKey() === fkId) as (IDoc<T> | null)
       if (_doc) {
@@ -68,7 +81,7 @@ export function TypeaheadFK<T>(props: IProps<T>) {
         });
       }
     } else {
-      fkCollection.get(fkId).then(doc => setDoc(doc));
+      getFkValue(fkCollection, fkId).then(setDoc);
     }
   }, [fkId, options?.()])
 
