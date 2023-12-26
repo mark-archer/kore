@@ -23,15 +23,27 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TypeaheadFK = void 0;
+exports.TypeaheadFK = exports.fkValueCacheTTL = exports.supportTables = void 0;
 const react_1 = __importStar(require("react"));
 const typeahead_1 = require("./typeahead");
 const knockout_1 = require("knockout");
 const hooks_1 = require("./hooks");
 const utils_1 = require("../utils");
 const supportTableEntries = {};
-const supportTables = []; //[GLAccountTypes, GLBalanceTypes];
+exports.supportTables = []; //[GLAccountTypes, GLBalanceTypes];
 const fkColumnValueCache = {};
+const fkValueCache = {};
+exports.fkValueCacheTTL = 1000;
+function getFkValue(fkCollection, fkId) {
+    const cacheId = `${fkCollection.entityName}-${fkId}`;
+    let pValue = fkValueCache[cacheId];
+    if (!pValue) {
+        pValue = fkCollection.get(fkId);
+        fkValueCache[cacheId] = pValue;
+        setTimeout(() => delete fkValueCache[cacheId], exports.fkValueCacheTTL);
+    }
+    return pValue;
+}
 function TypeaheadFK(props) {
     var _a;
     const { fkCollection } = props;
@@ -43,7 +55,7 @@ function TypeaheadFK(props) {
     // if we're going to use the default search, limit to first 1000 results to prevent performance problems for large datasets
     // ((text) => fkCollection.search(text, 1000)); // doing this prevents smart results caching in `typeahead` so this needs to be one fn per collection
     let options = props.options;
-    if (!options && supportTables.map(t => t.name).includes(fkCollection.entityName)) {
+    if (!options && exports.supportTables.map(t => t.name).includes(fkCollection.entityName)) {
         if (!supportTableEntries[fkCollection.entityName]) {
             supportTableEntries[fkCollection.entityName] = fkCollection.observables.list();
         }
@@ -60,7 +72,7 @@ function TypeaheadFK(props) {
             return;
         }
         // get all values from db for these supportTables
-        if (supportTables.map(t => t.name).includes(fkCollection.entityName)) {
+        if (exports.supportTables.map(t => t.name).includes(fkCollection.entityName)) {
             // get doc from list of support table entries, if support table entries are loaded, wait for load
             const _doc = supportTableEntries[fkCollection.entityName]().find(i => i.primaryKey() === fkId);
             if (_doc) {
@@ -75,7 +87,7 @@ function TypeaheadFK(props) {
             }
         }
         else {
-            fkCollection.get(fkId).then(doc => setDoc(doc));
+            getFkValue(fkCollection, fkId).then(setDoc);
         }
     }, [fkId, options === null || options === void 0 ? void 0 : options()]);
     const displayField = (doc) => {
