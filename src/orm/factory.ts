@@ -168,5 +168,18 @@ export function collectionFactory<T>(
   dataSource: IDataSource<T> = config.dataSourceFactory<T>(entity),
   validate: ((data: any) => void) = validationFactory(entity)
 ): Collection<T> {
+  // hidden feature of converting fkTypeName to fkType
+  for (const field of entity.fields) {
+    if (typeof field.fkType === "string") {
+      const eName = String(field.fkType);
+      field.fkType = Object.values(config.entities).find(e => e.name === eName || e.namePlural === eName);
+    }
+  }
+  // instantiate any fkCollections that don't exist
+  for (const field of entity.fields) {
+    if (field.fkType && !field.fkCollection) {
+      field.fkCollection = collectionFactory(field.fkType)
+    }
+  }
   return new Collection<T>(entity, validate, dataSource);
 }
