@@ -21,7 +21,7 @@ interface IProps<T>{
 }
 
 const supportTableEntries: { [key: string]: ObservableArray<IDoc<unknown>> } = {};
-export const supportTables = []; //[GLAccountTypes, GLBalanceTypes];
+export const supportTables = [] as Collection<any>[]; //[GLAccountTypes, GLBalanceTypes];
 
 const fkColumnValueCache = {} as Record<string, string>;
 
@@ -51,7 +51,8 @@ export function TypeaheadFK<T>(props: IProps<T>) {
     // ((text) => fkCollection.search(text, 1000)); // doing this prevents smart results caching in `typeahead` so this needs to be one fn per collection
 
   let options = props.options;
-  if (!options && supportTables.map(t => t.name).includes(fkCollection.entityName)) {
+  const supportTable = supportTables.find(st => st.entityName === fkCollection.entityName);
+  if (!options && supportTable) {
     if (!supportTableEntries[fkCollection.entityName]) {
       supportTableEntries[fkCollection.entityName] = fkCollection.observables.list();
     }
@@ -68,7 +69,7 @@ export function TypeaheadFK<T>(props: IProps<T>) {
       return;
     }
     // get all values from db for these supportTables
-    if (supportTables.map(t => t.name).includes(fkCollection.entityName)) {
+    if (supportTables.map(t => t.entityName).includes(fkCollection.entityName)) {
       // get doc from list of support table entries, if support table entries are loaded, wait for load
       const _doc = supportTableEntries[fkCollection.entityName]().find(i => i.primaryKey() === fkId) as (IDoc<T> | null)
       if (_doc) {
