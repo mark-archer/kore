@@ -318,7 +318,7 @@ const DataCell: <T>(params: IDataCellParams<T>) => any = React.memo(function <T>
   let onChange = (evt) => {
     let newValue: any = evt.target.value;
     if (column.dataType === 'Date') {
-      newValue = new Date(newValue);
+      newValue = newValue ? new Date(newValue) : null;
     } else if (column.dataType === 'boolean') {
       newValue = Boolean(evt.target.checked);
     } else if (column.dataType === 'number') {

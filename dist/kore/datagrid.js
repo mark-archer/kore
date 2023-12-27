@@ -222,7 +222,7 @@ const DataCell = react_1.default.memo(function ({ doc, column, iCol, iRow, cellS
     let onChange = (evt) => {
         let newValue = evt.target.value;
         if (column.dataType === 'Date') {
-            newValue = new Date(newValue);
+            newValue = newValue ? new Date(newValue) : null;
         }
         else if (column.dataType === 'boolean') {
             newValue = Boolean(evt.target.checked);
