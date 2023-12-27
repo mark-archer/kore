@@ -201,9 +201,12 @@ function Autogrid(params) {
         }
         return JSON.stringify(((_a = d === null || d === void 0 ? void 0 : d.toJS) === null || _a === void 0 ? void 0 : _a.call(d)) || d).toLowerCase().includes(_searchText);
     });
-    const [page] = (0, hooks_1.useObservable)(params.page);
+    let [page] = (0, hooks_1.useObservable)(params.page);
     const [pageSize] = (0, hooks_1.useObservable)(params.pageSize);
-    if (pageSize && !searchText) {
+    if (pageSize) {
+        if (searchText) {
+            page = 1;
+        }
         const iStart = (page - 1) * pageSize;
         const iEnd = iStart + pageSize;
         data = data.slice(iStart, iEnd);

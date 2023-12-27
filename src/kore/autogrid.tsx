@@ -218,9 +218,12 @@ export function Autogrid<T>(params: IParams<T>) {
     return JSON.stringify(d?.toJS?.() || d).toLowerCase().includes(_searchText);    
   });
 
-  const [page] = useObservable(params.page);
+  let [page] = useObservable(params.page);
   const [pageSize] = useObservable(params.pageSize);
-  if (pageSize && !searchText) {
+  if (pageSize) {
+    if (searchText) {
+      page = 1;
+    }
     const iStart = (page - 1) * pageSize;
     const iEnd = iStart + pageSize;
     data = data.slice(iStart, iEnd);
