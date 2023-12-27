@@ -205,7 +205,7 @@ function Autogrid(params) {
     const [pageSize] = (0, hooks_1.useObservable)(params.pageSize);
     if (pageSize) {
         const iStart = (page - 1) * pageSize;
-        const iEnd = iStart + pageSize - 1;
+        const iEnd = iStart + pageSize;
         data = data.slice(iStart, iEnd);
     }
     const datagridParams = Object.assign(Object.assign({ defaultSort: 'id' }, params), { columns,

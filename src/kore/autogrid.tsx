@@ -222,7 +222,7 @@ export function Autogrid<T>(params: IParams<T>) {
   const [pageSize] = useObservable(params.pageSize);
   if (pageSize) {
     const iStart = (page - 1) * pageSize;
-    const iEnd = iStart + pageSize - 1;
+    const iEnd = iStart + pageSize;
     data = data.slice(iStart, iEnd);
   }
 
