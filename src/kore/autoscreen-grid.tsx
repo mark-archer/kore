@@ -23,6 +23,7 @@ interface IProps<T> {
   showDelete?: boolean
   onSave?: (doc: IDoc<T>) => any
   onDelete?: (doc: IDoc<T>) => any
+  hideTitle?: boolean
 }
 
 export let DefaultGoTo = (path: string) => {
@@ -120,9 +121,11 @@ export function AutoscreenGrid<T>(props: IProps<T>) {
         )}
       </span>
 
-      <div className='fs-2 text-center'>
-        {props.title || camelCaseToSpaces(collection.entity.namePlural)}
-      </div>
+      { !props.hideTitle && (
+        <h2 className='text-center'>
+          {props.title || camelCaseToSpaces(collection.entity.namePlural)}
+        </h2>
+      )}
 
       { filterControls.length && (
         <div className="row" style={{ paddingBottom: '8px' }}>

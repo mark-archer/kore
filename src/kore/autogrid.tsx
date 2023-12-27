@@ -198,7 +198,7 @@ export function Autogrid<T>(params: IParams<T>) {
   }
 
   // filter out any data that doesn't match search text
-  const [searchText] = useObservable(params.searchText);
+  const [searchText] = useObservable(params.searchText || '');
   const data = _data.filter((d: any) => {
     let _searchText = searchText.toLowerCase();
     // this matches fk fields (and other special fields) with custom values
