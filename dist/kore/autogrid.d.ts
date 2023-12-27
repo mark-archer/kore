@@ -1,5 +1,5 @@
 /// <reference types="react" />
-import { MaybeObservable, ObservableArray } from 'knockout';
+import { MaybeObservable, Observable, ObservableArray } from 'knockout';
 import { Collection, IField } from '../orm/collection';
 import { IDoc } from '../orm/doc';
 import { IDatagridField } from './datagrid';
@@ -17,6 +17,8 @@ interface IParams<T> {
     onDelete?: (doc: IDoc<T>) => any;
     defaultSort?: string;
     searchText?: MaybeObservable<string>;
+    page?: Observable<number>;
+    pageSize?: Observable<number>;
 }
 export declare const AutoColumnsExcludedNames: string[];
 export declare function Autogrid<T>(params: IParams<T>): JSX.Element;

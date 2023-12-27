@@ -183,7 +183,7 @@ function Autogrid(params) {
     }
     // filter out any data that doesn't match search text
     const [searchText] = (0, hooks_1.useObservable)(params.searchText || '');
-    const data = _data.filter((d) => {
+    let data = _data.filter((d) => {
         var _a;
         // always show new items
         if (d.isNew) {
@@ -201,6 +201,13 @@ function Autogrid(params) {
         }
         return JSON.stringify(((_a = d === null || d === void 0 ? void 0 : d.toJS) === null || _a === void 0 ? void 0 : _a.call(d)) || d).toLowerCase().includes(_searchText);
     });
+    const [page] = (0, hooks_1.useObservable)(params.page);
+    const [pageSize] = (0, hooks_1.useObservable)(params.pageSize);
+    if (pageSize) {
+        const iStart = (page - 1) * pageSize;
+        const iEnd = iStart + pageSize - 1;
+        data = data.slice(iStart, iEnd);
+    }
     const datagridParams = Object.assign(Object.assign({ defaultSort: 'id' }, params), { columns,
         primaryKey,
         data, newRow: _newRow });

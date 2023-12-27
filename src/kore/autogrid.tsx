@@ -1,4 +1,4 @@
-import { isSubscribable, MaybeObservable, observableArray, ObservableArray, unwrap } from 'knockout';
+import { isSubscribable, MaybeObservable, Observable, observableArray, ObservableArray, unwrap } from 'knockout';
 import React, { useState } from 'react';
 import { useObservable, useObservableState } from './hooks';
 import { Collection, IField } from '../orm/collection';
@@ -22,6 +22,8 @@ interface IParams<T> {
   onDelete?: (doc: IDoc<T>) => any
   defaultSort?: string
   searchText?: MaybeObservable<string>
+  page?: Observable<number>
+  pageSize?: Observable<number>
 }
 
 export const AutoColumnsExcludedNames: string[] = []
@@ -199,7 +201,7 @@ export function Autogrid<T>(params: IParams<T>) {
 
   // filter out any data that doesn't match search text
   const [searchText] = useObservable(params.searchText || '');
-  const data = _data.filter((d) => {
+  let data = _data.filter((d) => {
     // always show new items
     if (d.isNew) {
        return true;
@@ -215,6 +217,14 @@ export function Autogrid<T>(params: IParams<T>) {
     }    
     return JSON.stringify(d?.toJS?.() || d).toLowerCase().includes(_searchText);    
   });
+
+  const [page] = useObservable(params.page);
+  const [pageSize] = useObservable(params.pageSize);
+  if (pageSize) {
+    const iStart = (page - 1) * pageSize;
+    const iEnd = iStart + pageSize - 1;
+    data = data.slice(iStart, iEnd);
+  }
 
   const datagridParams = {
     defaultSort: 'id',
