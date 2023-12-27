@@ -182,7 +182,7 @@ function Autogrid(params) {
         });
     }
     // filter out any data that doesn't match search text
-    const [searchText] = (0, hooks_1.useObservable)(params.searchText);
+    const [searchText] = (0, hooks_1.useObservable)(params.searchText || '');
     const data = _data.filter((d) => {
         var _a;
         let _searchText = searchText.toLowerCase();

@@ -18,6 +18,7 @@ interface IProps<T> {
     showDelete?: boolean;
     onSave?: (doc: IDoc<T>) => any;
     onDelete?: (doc: IDoc<T>) => any;
+    hideTitle?: boolean;
 }
 export declare let DefaultGoTo: (path: string) => never;
 export declare function AutoscreenGrid<T>(props: IProps<T>): JSX.Element;

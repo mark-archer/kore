@@ -107,7 +107,7 @@ function AutoscreenGrid(props) {
             error && (react_1.default.createElement("span", { className: 'clearfix text-danger text-wrap', style: { width: '100px' } },
                 react_1.default.createElement("br", null),
                 error))),
-        react_1.default.createElement("div", { className: 'fs-2 text-center' }, props.title || (0, utils_1.camelCaseToSpaces)(collection.entity.namePlural)),
+        !props.hideTitle && (react_1.default.createElement("h2", { className: 'text-center' }, props.title || (0, utils_1.camelCaseToSpaces)(collection.entity.namePlural))),
         filterControls.length && (react_1.default.createElement("div", { className: "row", style: { paddingBottom: '8px' } }, filterControls.map((c, i) => react_1.default.createElement(react_1.default.Fragment, { key: i }, c)))),
         react_1.default.createElement(autogrid_1.Autogrid, { collection: collection, columns: props.columns, data: data, defaultSort: (_a = props.defaultSort) !== null && _a !== void 0 ? _a : 'id', readOnly: props.readOnly, showSave: false, showDelete: showDelete, onDelete: doc => {
                 changesExist(true);
