@@ -199,7 +199,11 @@ export function Autogrid<T>(params: IParams<T>) {
 
   // filter out any data that doesn't match search text
   const [searchText] = useObservable(params.searchText || '');
-  const data = _data.filter((d: any) => {
+  const data = _data.filter((d) => {
+    // always show new items
+    if (d.isNew) {
+       return true;
+    }
     let _searchText = searchText.toLowerCase();
     // this matches fk fields (and other special fields) with custom values
     const match = columns.some(column => {

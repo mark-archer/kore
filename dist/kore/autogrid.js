@@ -185,6 +185,10 @@ function Autogrid(params) {
     const [searchText] = (0, hooks_1.useObservable)(params.searchText || '');
     const data = _data.filter((d) => {
         var _a;
+        // always show new items
+        if (d.isNew) {
+            return true;
+        }
         let _searchText = searchText.toLowerCase();
         // this matches fk fields (and other special fields) with custom values
         const match = columns.some(column => {
