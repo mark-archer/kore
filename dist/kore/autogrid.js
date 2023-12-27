@@ -210,7 +210,7 @@ function Autogrid(params) {
         const iStart = (page - 1) * pageSize;
         const iEnd = iStart + pageSize;
         const newRows = data.filter(d => d.isNew);
-        data = data.slice(iStart, iEnd);
+        data = data.filter(d => !d.isNew).slice(iStart, iEnd);
         data.push(...newRows);
     }
     const datagridParams = Object.assign(Object.assign({ defaultSort: 'id' }, params), { columns,
