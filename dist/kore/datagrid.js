@@ -210,7 +210,7 @@ const DataCell = react_1.default.memo(function ({ doc, column, iCol, iRow, cellS
         return (react_1.default.createElement(typeahead_fk_1.TypeaheadFK, { innerRef: ref, fkCollection: column.fkCollection, fkId: sub, readOnly: column.readOnly, dataGridColumn: column }));
     }
     const style = {};
-    if (column.dataType === 'number') {
+    if (column.dataType === 'number' && !(column.fkCollection || column.fkType)) {
         style.textAlign = 'right';
     }
     if (column.readOnly) {

@@ -300,7 +300,7 @@ const DataCell: <T>(params: IDataCellParams<T>) => any = React.memo(function <T>
   }
 
   const style: any = {};
-  if (column.dataType === 'number') {
+  if (column.dataType === 'number' && !(column.fkCollection || column.fkType)) {
     style.textAlign = 'right';
   }
 
