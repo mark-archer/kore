@@ -300,7 +300,7 @@ const DataCell: <T>(params: IDataCellParams<T>) => any = React.memo(function <T>
   }
 
   const style: any = {};
-  if (column.dataType === 'number' && !(column.fkCollection || column.fkType)) {
+  if (column.dataType === 'number') {
     style.textAlign = 'right';
   }
 
@@ -361,9 +361,10 @@ const DataCell: <T>(params: IDataCellParams<T>) => any = React.memo(function <T>
 
 function styleCellTd<T>(rowData: IDoc<T>, column: IDatagridField<T>): React.CSSProperties {
   const { dataType, format } = column;
+  const isFk = column.fkCollection || column.fkType;
   let textAlign: any =
     dataType === 'boolean' ? 'center' :
-      dataType === 'number' ? 'right' :
+      dataType === 'number' && !isFk ? 'right' :
         format === 'money' ? 'right' :
           '';
   return {

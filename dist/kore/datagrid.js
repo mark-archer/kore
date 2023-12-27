@@ -210,7 +210,7 @@ const DataCell = react_1.default.memo(function ({ doc, column, iCol, iRow, cellS
         return (react_1.default.createElement(typeahead_fk_1.TypeaheadFK, { innerRef: ref, fkCollection: column.fkCollection, fkId: sub, readOnly: column.readOnly, dataGridColumn: column }));
     }
     const style = {};
-    if (column.dataType === 'number' && !(column.fkCollection || column.fkType)) {
+    if (column.dataType === 'number') {
         style.textAlign = 'right';
     }
     if (column.readOnly) {
@@ -260,8 +260,9 @@ const DataCell = react_1.default.memo(function ({ doc, column, iCol, iRow, cellS
 function styleCellTd(rowData, column) {
     var _a, _b;
     const { dataType, format } = column;
+    const isFk = column.fkCollection || column.fkType;
     let textAlign = dataType === 'boolean' ? 'center' :
-        dataType === 'number' ? 'right' :
+        dataType === 'number' && !isFk ? 'right' :
             format === 'money' ? 'right' :
                 '';
     return Object.assign(Object.assign({ textAlign }, ((_a = column.tdStyle) !== null && _a !== void 0 ? _a : {})), ((_b = rowData.tdStyle) !== null && _b !== void 0 ? _b : {}));
