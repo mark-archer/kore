@@ -220,7 +220,7 @@ export function Autogrid<T>(params: IParams<T>) {
 
   const [page] = useObservable(params.page);
   const [pageSize] = useObservable(params.pageSize);
-  if (pageSize) {
+  if (pageSize && !searchText) {
     const iStart = (page - 1) * pageSize;
     const iEnd = iStart + pageSize;
     data = data.slice(iStart, iEnd);

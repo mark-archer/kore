@@ -203,7 +203,7 @@ function Autogrid(params) {
     });
     const [page] = (0, hooks_1.useObservable)(params.page);
     const [pageSize] = (0, hooks_1.useObservable)(params.pageSize);
-    if (pageSize) {
+    if (pageSize && !searchText) {
         const iStart = (page - 1) * pageSize;
         const iEnd = iStart + pageSize;
         data = data.slice(iStart, iEnd);
