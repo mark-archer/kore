@@ -28,13 +28,19 @@ export interface IParams<T> {
   newRow?: () => any | false
   defaultSort?: string
   disableSorting?: boolean
+  searchText?: string
+  page?: number
+  pageSize?: number
   cacheSortWithId?: string
+
 }
 
 export const sortCache = persistentValue<{ [sortId: string]: string[] }>({}, 'datagridSortCache');
 
 export function Datagrid<T>(params: IParams<T>) {
-  const { data, primaryKey, columns, newRow, defaultSort, cacheSortWithId } = params;
+  const { primaryKey, columns, newRow, defaultSort, cacheSortWithId, pageSize, searchText } = params;
+  let { page } = params;
+  let data = [...params.data];
 
   const [cellState]: any = useState(() => ({} as Record<string, any>));
   const [focusOnNewRow, setFocusOnNewRow] = useState(false);
@@ -91,10 +97,42 @@ export function Datagrid<T>(params: IParams<T>) {
     } else {
       sortFields.unshift(fieldName);
     }
-    
+
     if (cacheSortWithId) {
       sortCache({ ...sortCache(), [cacheSortWithId]: [...sortFields()] });
     }
+  }
+
+  // filter by search text
+  if (searchText) {
+    data = data.filter((d) => {
+      // always show new items
+      if (d.isNew) {
+        return true;
+      }
+      let _searchText = searchText.toLowerCase();
+      // this matches fk fields (and other special fields) with custom values
+      const match = columns.some(column => {
+        const text = JSON.stringify(column?.getValue?.(d, null))
+        return text?.toLowerCase().includes(_searchText);
+      });
+      if (match) {
+        return match;
+      }
+      return JSON.stringify(d?.toJS?.() || d).toLowerCase().includes(_searchText);
+    });
+  }
+
+  // limit to page size
+  if (pageSize) {
+    if (searchText) {
+      page = 1;
+    }
+    const iStart = (page - 1) * pageSize;
+    const iEnd = iStart + pageSize;
+    const newRows = data.filter(d => d.isNew);
+    data = data.filter(d => !d.isNew).slice(iStart, iEnd);
+    data.push(...newRows)
   }
 
   const newRowBtn = useRef();
@@ -161,7 +199,7 @@ export function Datagrid<T>(params: IParams<T>) {
         {newRow &&
           <tfoot>
             <tr>
-              <th scope="row" onKeyDown={evt => 
+              <th scope="row" onKeyDown={evt =>
                 onCellKeyDown(evt, cellState, data.length, 0)}>
                 <button ref={newRowBtn} className="btn btn-outline-secondary btn-sm" onClick={_newRow}
                   style={{ fontSize: '20px' }}

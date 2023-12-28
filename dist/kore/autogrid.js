@@ -180,41 +180,11 @@ function Autogrid(params) {
             }
         });
     }
-    // filter out any data that doesn't match search text
-    const [searchText] = (0, hooks_1.useObservable)(params.searchText || '');
-    let data = _data.filter((d) => {
-        var _a;
-        // always show new items
-        if (d.isNew) {
-            return true;
-        }
-        let _searchText = searchText.toLowerCase();
-        // this matches fk fields (and other special fields) with custom values
-        const match = columns.some(column => {
-            var _a;
-            const text = JSON.stringify((_a = column === null || column === void 0 ? void 0 : column.getValue) === null || _a === void 0 ? void 0 : _a.call(column, d, null));
-            return text === null || text === void 0 ? void 0 : text.toLowerCase().includes(_searchText);
-        });
-        if (match) {
-            return match;
-        }
-        return JSON.stringify(((_a = d === null || d === void 0 ? void 0 : d.toJS) === null || _a === void 0 ? void 0 : _a.call(d)) || d).toLowerCase().includes(_searchText);
-    });
-    let [page] = (0, hooks_1.useObservable)(params.page);
-    const [pageSize] = (0, hooks_1.useObservable)(params.pageSize);
-    if (pageSize) {
-        if (searchText) {
-            page = 1;
-        }
-        const iStart = (page - 1) * pageSize;
-        const iEnd = iStart + pageSize;
-        const newRows = data.filter(d => d.isNew);
-        data = data.filter(d => !d.isNew).slice(iStart, iEnd);
-        data.push(...newRows);
-    }
-    const datagridParams = Object.assign(Object.assign({ defaultSort: 'id' }, params), { columns,
-        primaryKey,
-        data, newRow: _newRow });
+    (0, hooks_1.useObservable)(params.page);
+    (0, hooks_1.useObservable)(params.pageSize);
+    (0, hooks_1.useObservable)(params.searchText);
+    const datagridParams = Object.assign(Object.assign({ defaultSort: 'id' }, params), { page: (0, knockout_1.unwrap)(params.page), pageSize: (0, knockout_1.unwrap)(params.pageSize), searchText: (0, knockout_1.unwrap)(params.searchText), columns,
+        primaryKey, data: _data, newRow: _newRow });
     return (react_1.default.createElement(datagrid_1.Datagrid, Object.assign({ cacheSortWithId: collection === null || collection === void 0 ? void 0 : collection.entityName }, datagridParams)));
 }
 exports.Autogrid = Autogrid;

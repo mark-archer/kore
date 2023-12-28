@@ -199,44 +199,20 @@ export function Autogrid<T>(params: IParams<T>) {
     });
   }
 
-  // filter out any data that doesn't match search text
-  const [searchText] = useObservable(params.searchText || '');
-  let data = _data.filter((d) => {
-    // always show new items
-    if (d.isNew) {
-       return true;
-    }
-    let _searchText = searchText.toLowerCase();
-    // this matches fk fields (and other special fields) with custom values
-    const match = columns.some(column => {
-      const text = JSON.stringify(column?.getValue?.(d, null))
-      return text?.toLowerCase().includes(_searchText);
-    });
-    if (match) {
-      return match;
-    }    
-    return JSON.stringify(d?.toJS?.() || d).toLowerCase().includes(_searchText);    
-  });
-
-  let [page] = useObservable(params.page);
-  const [pageSize] = useObservable(params.pageSize);
-  if (pageSize) {
-    if (searchText) {
-      page = 1;
-    }
-    const iStart = (page - 1) * pageSize;
-    const iEnd = iStart + pageSize;
-    const newRows = data.filter(d => d.isNew);
-    data = data.filter(d => !d.isNew).slice(iStart, iEnd);
-    data.push(...newRows)
-  }
+  useObservable(params.page);
+  useObservable(params.pageSize);
+  useObservable(params.searchText);
+  
 
   const datagridParams = {
     defaultSort: 'id',
     ...params,
+    page: unwrap(params.page),
+    pageSize: unwrap(params.pageSize),
+    searchText: unwrap(params.searchText),
     columns,
     primaryKey,
-    data,
+    data: _data,
     newRow: _newRow,
   }
 

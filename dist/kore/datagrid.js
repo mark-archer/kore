@@ -34,7 +34,9 @@ const input_number_1 = require("./input-number");
 exports.sortCache = (0, hooks_1.persistentValue)({}, 'datagridSortCache');
 function Datagrid(params) {
     var _a;
-    const { data, primaryKey, columns, newRow, defaultSort, cacheSortWithId } = params;
+    const { primaryKey, columns, newRow, defaultSort, cacheSortWithId, pageSize, searchText } = params;
+    let { page } = params;
+    let data = [...params.data];
     const [cellState] = (0, react_1.useState)(() => ({}));
     const [focusOnNewRow, setFocusOnNewRow] = (0, react_1.useState)(false);
     cellState.maxIRow = data.length - 1;
@@ -95,6 +97,38 @@ function Datagrid(params) {
         if (cacheSortWithId) {
             (0, exports.sortCache)(Object.assign(Object.assign({}, (0, exports.sortCache)()), { [cacheSortWithId]: [...sortFields()] }));
         }
+    }
+    // filter by search text
+    if (searchText) {
+        data = data.filter((d) => {
+            var _a;
+            // always show new items
+            if (d.isNew) {
+                return true;
+            }
+            let _searchText = searchText.toLowerCase();
+            // this matches fk fields (and other special fields) with custom values
+            const match = columns.some(column => {
+                var _a;
+                const text = JSON.stringify((_a = column === null || column === void 0 ? void 0 : column.getValue) === null || _a === void 0 ? void 0 : _a.call(column, d, null));
+                return text === null || text === void 0 ? void 0 : text.toLowerCase().includes(_searchText);
+            });
+            if (match) {
+                return match;
+            }
+            return JSON.stringify(((_a = d === null || d === void 0 ? void 0 : d.toJS) === null || _a === void 0 ? void 0 : _a.call(d)) || d).toLowerCase().includes(_searchText);
+        });
+    }
+    // limit to page size
+    if (pageSize) {
+        if (searchText) {
+            page = 1;
+        }
+        const iStart = (page - 1) * pageSize;
+        const iEnd = iStart + pageSize;
+        const newRows = data.filter(d => d.isNew);
+        data = data.filter(d => !d.isNew).slice(iStart, iEnd);
+        data.push(...newRows);
     }
     const newRowBtn = (0, react_1.useRef)();
     cellState.newRowBtn = newRowBtn;

@@ -20,6 +20,9 @@ export interface IParams<T> {
     newRow?: () => any | false;
     defaultSort?: string;
     disableSorting?: boolean;
+    searchText?: string;
+    page?: number;
+    pageSize?: number;
     cacheSortWithId?: string;
 }
 export declare const sortCache: Observable<{
