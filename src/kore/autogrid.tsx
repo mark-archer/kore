@@ -6,7 +6,6 @@ import { IDoc } from '../orm/doc';
 import { Datagrid, IDatagridField } from './datagrid';
 import { camelCaseToSpaces } from '../utils';
 
-console.log('autogrid');
 
 interface IParams<T> {
   collection?: Collection<T>,
@@ -24,6 +23,7 @@ interface IParams<T> {
   searchText?: MaybeObservable<string>
   page?: Observable<number>
   pageSize?: Observable<number>
+  cacheSortWithId?: string
 }
 
 export const AutoColumnsExcludedNames: string[] = []

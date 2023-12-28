@@ -3,7 +3,6 @@ import { MaybeSubscribable, unwrap } from 'knockout';
 import Sortable from 'sortablejs';
 import { last, sortBy } from 'lodash';
 
-console.log('sortable-list');
 
 export interface ISortable {
   sortOrder: number

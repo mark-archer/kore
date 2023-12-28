@@ -8,7 +8,6 @@ const react_1 = __importDefault(require("react"));
 const knockout_1 = require("knockout");
 const sortablejs_1 = __importDefault(require("sortablejs"));
 const lodash_1 = require("lodash");
-console.log('sortable-list');
 class SortableList extends react_1.default.Component {
     constructor(props) {
         super(props);

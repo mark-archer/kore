@@ -29,7 +29,6 @@ const react_1 = __importStar(require("react"));
 const hooks_1 = require("./hooks");
 const datagrid_1 = require("./datagrid");
 const utils_1 = require("../utils");
-console.log('autogrid');
 exports.AutoColumnsExcludedNames = [];
 function Autogrid(params) {
     var _a, _b;
