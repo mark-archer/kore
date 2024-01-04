@@ -5,6 +5,7 @@ const knockout_1 = require("knockout");
 const doc_1 = require("./doc");
 const utils_1 = require("../utils");
 const factory_1 = require("./factory");
+const data_query_1 = require("./data-query");
 exports.collections = [];
 class Collection {
     constructor(entity, validate, dataSource, primaryKey) {
@@ -141,6 +142,9 @@ class Collection {
             return false;
         }
         return this.list(matchAnyText, limit, lastModified, group, direction);
+    }
+    query(filter) {
+        return new data_query_1.DataQuery(this, async (query) => this.dataSource.query(query), filter);
     }
     async save(_entity) {
         return this.dataSource.save(_entity);

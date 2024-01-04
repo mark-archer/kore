@@ -6,7 +6,7 @@ const collection_1 = require("./collection");
 const lodash_1 = require("lodash");
 // TODO changing this to a class would probably be a significant performance boost
 //			because each one of those functions would only be instantiated once instead of for every doc
-//			NOTE: I gave this a shot and found out indexing fields is clear cut and the `this` binding becomes a problem
+//			NOTE: I gave this a shot and found out indexing fields isn't clear cut and the `this` binding becomes a problem
 function newDoc(data = {}, collection) {
     if (!collection) {
         const fields = Object.keys(data).map(name => {

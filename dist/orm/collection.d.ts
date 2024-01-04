@@ -1,6 +1,7 @@
 import { Observable, ObservableArray } from 'knockout';
 import { IDoc } from './doc';
 import { IObjectMatch } from '../utils';
+import { DataFilter, DataQuery } from './data-query';
 export interface IEntity {
     id?: string;
     name: string;
@@ -29,6 +30,7 @@ export interface ICursor<T> {
 }
 export interface IDataSource<T> {
     get(id: string): Promise<T | null>;
+    query(query: DataQuery<T>): Promise<T[]>;
     list(lastModified?: number, group?: string, direction?: ICursorDirection): Promise<ICursor<T>>;
     save(data: T): Promise<T>;
     remove(data: T): Promise<boolean>;
@@ -46,6 +48,7 @@ export declare class Collection<T> {
     get(id: string): Promise<IDoc<T> | null>;
     list(match?: IObjectMatch<T> | ((doc: T) => (boolean | Promise<boolean>)), limit?: number, lastModified?: number, group?: string, direction?: ICursorDirection): Promise<IDoc<T>[]>;
     search(text: string, limit?: number, lastModified?: number, group?: string, direction?: ICursorDirection): Promise<IDoc<T>[]>;
+    query(filter?: DataFilter<T>): DataQuery<T>;
     save(_entity: T): Promise<T>;
     remove(entity: T | string): Promise<boolean>;
     observables: {

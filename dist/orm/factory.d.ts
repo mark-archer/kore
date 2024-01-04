@@ -19,3 +19,4 @@ export declare function generateTypedEntity(entity: IEntity, options?: {
 }): Promise<string | true>;
 export declare function validationFactory(entity: IEntity): (data: any) => void;
 export declare function collectionFactory<T>(entity: IEntity, dataSource?: IDataSource<T>, validate?: ((data: any) => void)): Collection<T>;
+export declare function arrayAsCollection<T>(ary: T[], entityOpts?: Partial<IEntity>): Collection<T>;

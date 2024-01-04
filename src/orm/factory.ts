@@ -1,4 +1,5 @@
-import { Collection, FieldType, IDataSource, IEntity, IField } from "./collection"
+import { uniq } from "lodash";
+import { Collection, FieldType, ICursor, IDataSource, IEntity, IField } from "./collection"
 
 import {
   Boolean as RBoolean,
@@ -182,4 +183,76 @@ export function collectionFactory<T>(
     }
   }
   return new Collection<T>(entity, validate, dataSource);
+}
+
+let arrayCollectionCount = 0;
+export function arrayAsCollection<T>(ary: T[], entityOpts: Partial<IEntity> = {}): Collection<T> {
+	let fields = entityOpts?.fields;
+	delete entityOpts.fields;
+	if (!fields) {
+		const fieldNames = uniq(ary.map(item => Object.keys(item)).flat());
+		fields = fieldNames.map(name => {
+			const firstValue = ary.find(item => item[name] !== undefined && item[name] !== null)?.[name];
+			const valueType = typeof firstValue;
+			let dataType: FieldType = 'any';
+			if (valueType !== 'object' && valueType !== 'function' && valueType !== 'symbol') {
+				dataType = valueType as FieldType;
+			}
+			let optional = false;
+			return {
+				name,
+				dataType,
+				optional
+			}
+		});
+	}
+	const entity: IEntity = {
+		name: `ArrayCollection_${arrayCollectionCount++}`,
+		fields,
+		...entityOpts,
+	}
+  const primaryKey = entity.primaryKey || config.defaultPrimaryKey;
+  const dataSource: IDataSource<T> = {
+    get(id) {
+      return Promise.resolve(ary.find(item => item[primaryKey.name] === id));
+    },
+    list(lastModified, group, direction) {
+      const iValue = 0;
+      const cursor: ICursor<T> = {
+        value: null,
+        next() {
+          if (iValue >= ary.length) {
+            return Promise.resolve(null);
+          }
+          cursor.value = ary[iValue];
+          return Promise.resolve(cursor.value);
+        },
+      }
+      return Promise.resolve(cursor);
+    },
+    query(query) {
+      // TODO
+      return Promise.resolve(ary);
+    },
+    async remove(data) {
+      const arrayEntry = await dataSource.get(data[primaryKey.name]);
+      if (arrayEntry) {
+        ary.splice(ary.indexOf(arrayEntry), 1);
+      }
+      return Promise.resolve(true);
+    },
+    save(data) {
+      const arrayEntry = dataSource.get(data[primaryKey.name]);
+      if (arrayEntry) {
+        Object.assign(arrayEntry, data);
+      } else {
+        ary.push(data);
+      }
+      return Promise.resolve(arrayEntry);
+    },
+  }
+  return collectionFactory(
+    entity,
+    dataSource,
+  );
 }

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.collectionFactory = exports.validationFactory = exports.generateTypedEntity = exports.singular = exports.pluralize = exports.config = void 0;
+exports.arrayAsCollection = exports.collectionFactory = exports.validationFactory = exports.generateTypedEntity = exports.singular = exports.pluralize = exports.config = void 0;
+const lodash_1 = require("lodash");
 const collection_1 = require("./collection");
 const runtypes_1 = require("runtypes");
 const RDate = (0, runtypes_1.InstanceOf)(Date);
@@ -152,4 +153,71 @@ function collectionFactory(entity, dataSource = exports.config.dataSourceFactory
     return new collection_1.Collection(entity, validate, dataSource);
 }
 exports.collectionFactory = collectionFactory;
+let arrayCollectionCount = 0;
+function arrayAsCollection(ary, entityOpts = {}) {
+    let fields = entityOpts === null || entityOpts === void 0 ? void 0 : entityOpts.fields;
+    delete entityOpts.fields;
+    if (!fields) {
+        const fieldNames = (0, lodash_1.uniq)(ary.map(item => Object.keys(item)).flat());
+        fields = fieldNames.map(name => {
+            var _a;
+            const firstValue = (_a = ary.find(item => item[name] !== undefined && item[name] !== null)) === null || _a === void 0 ? void 0 : _a[name];
+            const valueType = typeof firstValue;
+            let dataType = 'any';
+            if (valueType !== 'object' && valueType !== 'function' && valueType !== 'symbol') {
+                dataType = valueType;
+            }
+            let optional = false;
+            return {
+                name,
+                dataType,
+                optional
+            };
+        });
+    }
+    const entity = Object.assign({ name: `ArrayCollection_${arrayCollectionCount++}`, fields }, entityOpts);
+    const primaryKey = entity.primaryKey || exports.config.defaultPrimaryKey;
+    const dataSource = {
+        get(id) {
+            return Promise.resolve(ary.find(item => item[primaryKey.name] === id));
+        },
+        list(lastModified, group, direction) {
+            const iValue = 0;
+            const cursor = {
+                value: null,
+                next() {
+                    if (iValue >= ary.length) {
+                        return Promise.resolve(null);
+                    }
+                    cursor.value = ary[iValue];
+                    return Promise.resolve(cursor.value);
+                },
+            };
+            return Promise.resolve(cursor);
+        },
+        query(query) {
+            // TODO
+            return Promise.resolve(ary);
+        },
+        async remove(data) {
+            const arrayEntry = await dataSource.get(data[primaryKey.name]);
+            if (arrayEntry) {
+                ary.splice(ary.indexOf(arrayEntry), 1);
+            }
+            return Promise.resolve(true);
+        },
+        save(data) {
+            const arrayEntry = dataSource.get(data[primaryKey.name]);
+            if (arrayEntry) {
+                Object.assign(arrayEntry, data);
+            }
+            else {
+                ary.push(data);
+            }
+            return Promise.resolve(arrayEntry);
+        },
+    };
+    return collectionFactory(entity, dataSource);
+}
+exports.arrayAsCollection = arrayAsCollection;
 //# sourceMappingURL=factory.js.map

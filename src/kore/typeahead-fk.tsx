@@ -20,7 +20,7 @@ interface IProps<T>{
   afterChange?: (value: T) => any  
 }
 
-const supportTableEntries: { [key: string]: ObservableArray<IDoc<unknown>> } = {};
+const supportTableEntries: { [key: string]: ObservableArray<IDoc<any>> } = {};
 export const supportTables = [] as Collection<any>[]; //[GLAccountTypes, GLBalanceTypes];
 
 const fkColumnValueCache = {} as Record<string, string>;

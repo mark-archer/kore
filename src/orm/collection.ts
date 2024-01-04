@@ -3,6 +3,7 @@ import { Observable, observable, observableArray, ObservableArray } from 'knocko
 import { IDoc, newDoc } from './doc';
 import { IObjectMatch, objectMatch } from '../utils';
 import { config } from './factory';
+import { DataFilter, DataQuery } from './data-query';
 
 export interface IEntity {
   id?: string
@@ -37,6 +38,7 @@ export interface ICursor<T> {
 
 export interface IDataSource<T> {
 	get(id: string): Promise<T | null>
+	query(query: DataQuery<T>): Promise<T[]>
 	list(
 		lastModified?: number,
 		group?: string,
@@ -182,6 +184,10 @@ export class Collection<T> {
 			return false;
 		}
 		return this.list(matchAnyText, limit, lastModified, group, direction);
+	}
+
+	query(filter?: DataFilter<T>): DataQuery<T> {
+		return new DataQuery<T>(this, async (query: DataQuery<T>) => this.dataSource.query(query), filter);
 	}
 
 	async save(_entity: T): Promise<T> {
