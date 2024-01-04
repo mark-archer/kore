@@ -1,6 +1,6 @@
 import { Computed, Observable, ObservableArray, computed, observable, observableArray } from 'knockout';
 import { isArray } from 'lodash';
-import { Collection } from './collection';
+import { Collection, ICursor, ICursorIterable, iterableCursor } from './collection';
 import { IDoc } from './doc';
 
 export class DataQuery<T> {
@@ -14,7 +14,7 @@ export class DataQuery<T> {
   public readonly textSearch: Observable<string> = observable('');
 
   constructor(
-    public readonly collection: Collection<T>, 
+    public readonly collection: Collection<T>,
     public readonly execQuery: (query: DataQuery<T>) => Promise<T[]>,
     filter?: DataFilter<T>,
   ) {
@@ -31,21 +31,58 @@ export class DataQuery<T> {
       this.textSearch();
       return changeCount++;
     })
-  }  
+  }
 
-  public get observableResults() : ObservableArray<IDoc<T>> {
+  public clone() {
+    const dataQuery = new DataQuery(this.collection, this.execQuery);
+    dataQuery.page(this.page());
+    dataQuery.pageSize(this.pageSize());
+    dataQuery.sortBy(this.sortBy());
+    dataQuery.filter({ ...this.filter() });
+    dataQuery.clientFilter(this.clientFilter());
+    dataQuery.textSearch(this.textSearch());
+    return dataQuery;
+  }
+
+  public async getResults(): Promise<IDoc<T>[]> {
+    let results = await this.execQuery(this);
+    if (this.clientFilter()) {
+      results = results.filter(this.clientFilter());
+    }
+    return results.map(r => this.collection.init(r));
+  }
+
+  public get observablePage(): ObservableArray<IDoc<T>> {
     const obs = observableArray<IDoc<T>>([]);
     this.changes.subscribe(() => this.getResults().then(results => obs(results)));
     return obs;
   }
 
-  public async getResults(): Promise<IDoc<T>[]> {
-    return await this.execQuery(this).then(results => {
-      if (this.clientFilter) {
-        results = results.filter(this.clientFilter);
-      }
-      return results.map(r => this.collection.init(r));
-    });
+  public cursor(): ICursorIterable<T> {
+    const dataQuery = this.clone();
+    let buffer: IDoc<T>[] = [];
+    let eof = false;
+    const cursor: ICursor<T> = {
+      value: null,
+      next: async () => {
+        if (eof) {
+          return null;
+        }
+        if (!buffer.length) {
+          buffer = await dataQuery.getResults();
+          dataQuery.page(dataQuery.page() + 1);
+        }
+        if (buffer.length) {
+          cursor.value = buffer.shift();
+          return cursor.value;
+        } else {
+          eof = true;
+          cursor.value = null;
+          return null;
+        }
+      },
+    }
+    return iterableCursor(cursor);
   }
 }
 
@@ -97,15 +134,15 @@ type DataFieldScalar = boolean | number | string | Date | null;
 // export type DataFilterListOperator = '$in' | '$nin';
 type DataFilterValueOperator = '$ne' | '$gt' | '$gte' | '$lt' | '$lte' | '$exists';
 
-type DataFilterValue = 
-  DataFieldScalar | 
-  DataFieldScalar[] | 
+type DataFilterValue =
+  DataFieldScalar |
+  DataFieldScalar[] |
   // DataFilterList | 
-  { [key in DataFilterValueOperator]?: DataFieldScalar } | 
+  { [key in DataFilterValueOperator]?: DataFieldScalar } |
   { $nin: DataFieldScalar[] };
 
-type DataFilterAnd<T> = { 
-  [key in keyof T]?: DataFilterValue 
+type DataFilterAnd<T> = {
+  [key in keyof T]?: DataFilterValue
 }
 
 type DataFilterOr<T> = DataFilterAnd<T>[];
@@ -118,7 +155,7 @@ export function dataFilterToSqlWhere(filter: DataFilter<any>): string {
     return `(${orStatement})`
   }
   const fieldNames = Object.keys(filter).filter(name => !name.startsWith('$'));
-  if (!fieldNames.length) { 
+  if (!fieldNames.length) {
     return '(1=1)';
   }
   const strFilter = fieldNames.map(name => {
@@ -147,17 +184,17 @@ export function dataFilterToSqlWhere(filter: DataFilter<any>): string {
           value = null;
         } else {
           operator = key === '$ne' ? '<>' :
-            key === '$gt' ? '>'  :
-            key === '$gte' ? '>=' :
-            key === '$lt' ? '<' :
-            key === '$lte' ? '<=' : 
-            null;
+            key === '$gt' ? '>' :
+              key === '$gte' ? '>=' :
+                key === '$lt' ? '<' :
+                  key === '$lte' ? '<=' :
+                    null;
           if (operator === null) {
             throw new Error(`unknown operator: ${key}`);
           }
         }
       }
-    } 
+    }
     let strValue = dataFieldScalarToSqlValue(value as (DataFieldScalar | DataFieldScalar[]));
     return `[${name}] ${operator} ${strValue}`;
   }).join(' AND ');

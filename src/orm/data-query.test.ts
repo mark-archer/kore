@@ -92,8 +92,44 @@ describe('dataFilterToSqlWhere', () => {
     const result = dataFilterToSqlWhere(filter);
     expect(result).toBe("(([age] < 10) OR ([age] <= 10) OR ([age] <> 10))");
   });
-
 });
+
+const aryCollection = arrayAsCollection([
+  { id: 1, name: 'John', age: 30 },
+  { id: 2, name: 'Jane', age: 32 },
+  { id: 3, name: 'Joe', age: 29 },
+  { id: 4, name: 'Jeb', age: 50 },
+  { id: 5, name: 'Joey', age: 31 },
+],{ 
+  name: 'Person', 
+  namePlural: 'People' 
+});
+
+describe('DataQuery', () => {
+
+  describe('cursor', () => {
+    const query = aryCollection.query();
+    query.pageSize(2);
+    
+    it('should allow async iteration via `for await`', async () => {      
+      let results = [];
+      for await (const item of query.cursor()) {
+        results.push(item.id);
+      }
+      expect(results).toEqual([1,2,3,4,5]);
+    });
+  
+    it('should allow async iteration via `while await next`', async () => {
+      let results = [];
+      const cursor = query.cursor();
+      while (await cursor.next()) {
+        results.push(cursor.value.id);
+      }
+      expect(results).toEqual([1,2,3,4,5]);
+    });
+  });
+})
+
 
 describe('dataQueryToSqlQuery', () => {
   const aryCollection = arrayAsCollection([

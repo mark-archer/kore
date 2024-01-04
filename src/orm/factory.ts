@@ -217,7 +217,7 @@ export function arrayAsCollection<T>(ary: T[], entityOpts: Partial<IEntity> = {}
       return Promise.resolve(ary.find(item => item[primaryKey.name] === id));
     },
     list(lastModified, group, direction) {
-      const iValue = 0;
+      let iValue = 0;
       const cursor: ICursor<T> = {
         value: null,
         next() {
@@ -225,14 +225,19 @@ export function arrayAsCollection<T>(ary: T[], entityOpts: Partial<IEntity> = {}
             return Promise.resolve(null);
           }
           cursor.value = ary[iValue];
+          iValue++;
           return Promise.resolve(cursor.value);
         },
       }
       return Promise.resolve(cursor);
     },
-    query(query) {
-      // TODO
-      return Promise.resolve(ary);
+    async query(query) {
+      // TODO - finish implementing sorted, filtered, and textSearch
+
+      // paging - needed for query cursor to work
+      const iStart = (query.page() - 1) * query.pageSize();
+      const iEnd = query.page() * query.pageSize();
+      return ary.slice(iStart, iEnd);
     },
     async remove(data) {
       const arrayEntry = await dataSource.get(data[primaryKey.name]);
