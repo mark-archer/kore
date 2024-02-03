@@ -24,6 +24,7 @@ interface IParams<T> {
   page?: Observable<number>
   pageSize?: Observable<number>
   cacheSortWithId?: string
+  selectedRow?: Observable<IDoc<T>>
 }
 
 export const AutoColumnsExcludedNames: string[] = []

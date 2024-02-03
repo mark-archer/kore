@@ -1,4 +1,4 @@
-import { computed, isSubscribable, Observable, unwrap } from 'knockout';
+import { computed, isSubscribable, observable, Observable, unwrap } from 'knockout';
 import React, { useRef, useState } from 'react';
 import _, { isNumber, sumBy } from 'lodash';
 import { camelCaseToSpaces, moneyFormatter } from '../utils';
@@ -21,7 +21,7 @@ export interface IDatagridField<T> extends Partial<IField> {
   showTotal?: boolean | ((docs: IDoc<T>[]) => any)
 }
 
-export interface IParams<T> {
+export interface IDatagridParams<T> {
   data: IDoc<T>[]
   columns: IDatagridField<T>[]
   primaryKey: IField
@@ -32,20 +32,23 @@ export interface IParams<T> {
   page?: number
   pageSize?: number
   cacheSortWithId?: string
-
+  selectedRow?: Observable<IDoc<T>>
 }
 
 export const sortCache = persistentValue<{ [sortId: string]: string[] }>({}, 'datagridSortCache');
 
-export function Datagrid<T>(params: IParams<T>) {
+export function Datagrid<T>(params: IDatagridParams<T>) {
   const { primaryKey, columns, newRow, defaultSort, cacheSortWithId, pageSize, searchText } = params;
   let { page } = params;
   let data = [...params.data];
+  let selectedRow = params.selectedRow || observable<IDoc<T>>(null);
 
   const [cellState]: any = useState(() => ({} as Record<string, any>));
   const [focusOnNewRow, setFocusOnNewRow] = useState(false);
   cellState.maxIRow = data.length - 1;
   cellState.maxICol = columns.length - 1;
+  // cellState.data = data;
+  // cellState.selectedRow = selectedRow;
 
   const _defaultSort = cacheSortWithId && sortCache()[cacheSortWithId]?.length
     ? sortCache()[cacheSortWithId]
@@ -191,7 +194,15 @@ export function Datagrid<T>(params: IParams<T>) {
         {/* rows */}
         <tbody>
           {data.map((rowData, iRow) =>
-            <DataRow key={rowData[primaryKey.name] || Math.random()} rowData={rowData} columns={columns} primaryKey={primaryKey} iRow={iRow} cellState={cellState} />
+            <DataRow 
+              key={rowData[primaryKey.name] || Math.random()} 
+              rowData={rowData} 
+              columns={columns} 
+              primaryKey={primaryKey} 
+              iRow={iRow} 
+              cellState={cellState} 
+              selectedRow={selectedRow}
+            />
           )}
         </tbody>
 
@@ -266,15 +277,20 @@ interface IDataRowParams<T> {
   primaryKey: IDatagridField<T>
   iRow: number
   cellState: any
-  // key?: any
+  selectedRow: Observable<IDoc<T>>
 }
 
 const DataRow: <T>(params: IDataRowParams<T>) => any =
-  React.memo(function <T>({ rowData, columns, primaryKey, iRow, cellState }: IDataRowParams<T>) {
-    let [validationError] = useObservable(rowData.validationError)
+  React.memo(function <T>({ rowData, columns, primaryKey, iRow, cellState, selectedRow }: IDataRowParams<T>) {
+    const [validationError] = useObservable(rowData.validationError);
+    const [selectedRowValue] = useObservable(selectedRow);
     return (
       <tr key={rowData[primaryKey.name] || Math.random()}
         className={validationError ? 'table-danger' : ''}
+        onFocus={() => selectedRow(rowData)}
+        style={{ 
+          backgroundColor: selectedRowValue === rowData ? 'rgba(173, 216, 230, 0.51)' : ''
+        }}
       >
         {columns.map((column, iCol) => {
           return (
@@ -422,6 +438,7 @@ function getSelectedText(elem) {
 
 function focusOnCell(cellState, iRow: number, iCol: number, direction: 'next' | 'prev' = 'next') {
   const { maxIRow, maxICol, newRowBtn } = cellState;
+  // const { data, selectedRow } = cellState;
   if (direction === 'next') {
     while (iRow <= maxIRow) {
       while (iCol <= maxICol) {
@@ -429,6 +446,7 @@ function focusOnCell(cellState, iRow: number, iCol: number, direction: 'next' | 
         if (ref?.current?.focus && !ref?.current?.disabled /*TODO zIndex === -1*/) {
           ref.current.focus();
           ref.current.select?.();
+          // selectedRow(data[iRow]);
           return;
         }
         iCol++;
@@ -443,6 +461,7 @@ function focusOnCell(cellState, iRow: number, iCol: number, direction: 'next' | 
         if (ref?.current?.focus && !ref?.current?.disabled /*TODO zIndex === -1*/) {
           ref.current.focus();
           ref.current.select?.();
+          // selectedRow(data[iRow]);
           return;
         }
         iCol--;
