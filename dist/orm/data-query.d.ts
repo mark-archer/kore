@@ -1,5 +1,5 @@
 import { Computed, Observable, ObservableArray } from 'knockout';
-import { Collection } from './collection';
+import { Collection, ICursorIterable } from './collection';
 import { IDoc } from './doc';
 export declare class DataQuery<T> {
     readonly collection: Collection<T>;
@@ -12,8 +12,10 @@ export declare class DataQuery<T> {
     readonly changes: Computed<number>;
     readonly textSearch: Observable<string>;
     constructor(collection: Collection<T>, execQuery: (query: DataQuery<T>) => Promise<T[]>, filter?: DataFilter<T>);
-    get observableResults(): ObservableArray<IDoc<T>>;
+    clone(): DataQuery<T>;
     getResults(): Promise<IDoc<T>[]>;
+    get observablePage(): ObservableArray<IDoc<T>>;
+    cursor(): ICursorIterable<T>;
 }
 export declare function dataQueryToSqlQuery(dataQuery: DataQuery<any>): string;
 type SortBy<T> = (keyof T | `-${keyof T}`)[];

@@ -1,11 +1,23 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Collection = exports.collections = void 0;
+exports.Collection = exports.collections = exports.iterableCursor = void 0;
 const knockout_1 = require("knockout");
 const doc_1 = require("./doc");
 const utils_1 = require("../utils");
 const factory_1 = require("./factory");
 const data_query_1 = require("./data-query");
+function iterableCursor(cursor) {
+    cursor[Symbol.asyncIterator] = () => {
+        return {
+            next: async () => {
+                const value = await cursor.next();
+                return { value, done: !value };
+            }
+        };
+    };
+    return cursor;
+}
+exports.iterableCursor = iterableCursor;
 exports.collections = [];
 class Collection {
     constructor(entity, validate, dataSource, primaryKey) {

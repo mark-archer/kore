@@ -1,4 +1,11 @@
 "use strict";
+var __asyncValues = (this && this.__asyncValues) || function (o) {
+    if (!Symbol.asyncIterator) throw new TypeError("Symbol.asyncIterator is not defined.");
+    var m = o[Symbol.asyncIterator], i;
+    return m ? m.call(o) : (o = typeof __values === "function" ? __values(o) : o[Symbol.iterator](), i = {}, verb("next"), verb("throw"), verb("return"), i[Symbol.asyncIterator] = function () { return this; }, i);
+    function verb(n) { i[n] = o[n] && function (v) { return new Promise(function (resolve, reject) { v = o[n](v), settle(resolve, reject, v.done, v.value); }); }; }
+    function settle(resolve, reject, d, v) { Promise.resolve(v).then(function(v) { resolve({ value: v, done: d }); }, reject); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const data_query_1 = require("./data-query");
 const factory_1 = require("./factory");
@@ -80,6 +87,55 @@ describe('dataFilterToSqlWhere', () => {
         ];
         const result = (0, data_query_1.dataFilterToSqlWhere)(filter);
         expect(result).toBe("(([age] < 10) OR ([age] <= 10) OR ([age] <> 10))");
+    });
+});
+const aryCollection = (0, factory_1.arrayAsCollection)([
+    { id: 1, name: 'John', age: 30 },
+    { id: 2, name: 'Jane', age: 32 },
+    { id: 3, name: 'Joe', age: 29 },
+    { id: 4, name: 'Jeb', age: 50 },
+    { id: 5, name: 'Joey', age: 31 },
+], {
+    name: 'Person',
+    namePlural: 'People'
+});
+describe('DataQuery', () => {
+    describe('cursor', () => {
+        const query = aryCollection.query();
+        query.pageSize(2);
+        it('should allow async iteration via `for await`', async () => {
+            var _a, e_1, _b, _c;
+            let results = [];
+            try {
+                for (var _d = true, _e = __asyncValues(query.cursor()), _f; _f = await _e.next(), _a = _f.done, !_a;) {
+                    _c = _f.value;
+                    _d = false;
+                    try {
+                        const item = _c;
+                        results.push(item.id);
+                    }
+                    finally {
+                        _d = true;
+                    }
+                }
+            }
+            catch (e_1_1) { e_1 = { error: e_1_1 }; }
+            finally {
+                try {
+                    if (!_d && !_a && (_b = _e.return)) await _b.call(_e);
+                }
+                finally { if (e_1) throw e_1.error; }
+            }
+            expect(results).toEqual([1, 2, 3, 4, 5]);
+        });
+        it('should allow async iteration via `while await next`', async () => {
+            let results = [];
+            const cursor = query.cursor();
+            while (await cursor.next()) {
+                results.push(cursor.value.id);
+            }
+            expect(results).toEqual([1, 2, 3, 4, 5]);
+        });
     });
 });
 describe('dataQueryToSqlQuery', () => {

@@ -26,8 +26,10 @@ export interface IField {
 export type ICursorDirection = 'next' | 'nextunique' | 'prev' | 'prevunique';
 export interface ICursor<T> {
     value: T;
-    next: () => Promise<T | boolean>;
+    next: () => Promise<T | null>;
 }
+export type ICursorIterable<T> = ICursor<T> & AsyncIterable<T>;
+export declare function iterableCursor<T>(cursor: ICursor<T>): ICursorIterable<T>;
 export interface IDataSource<T> {
     get(id: string): Promise<T | null>;
     query(query: DataQuery<T>): Promise<T[]>;

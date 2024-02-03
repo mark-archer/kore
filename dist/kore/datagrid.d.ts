@@ -13,7 +13,7 @@ export interface IDatagridField<T> extends Partial<IField> {
     tdStyle?: any;
     showTotal?: boolean | ((docs: IDoc<T>[]) => any);
 }
-export interface IParams<T> {
+export interface IDatagridParams<T> {
     data: IDoc<T>[];
     columns: IDatagridField<T>[];
     primaryKey: IField;
@@ -24,8 +24,9 @@ export interface IParams<T> {
     page?: number;
     pageSize?: number;
     cacheSortWithId?: string;
+    selectedRow?: Observable<IDoc<T>>;
 }
 export declare const sortCache: Observable<{
     [sortId: string]: string[];
 }>;
-export declare function Datagrid<T>(params: IParams<T>): JSX.Element;
+export declare function Datagrid<T>(params: IDatagridParams<T>): JSX.Element;

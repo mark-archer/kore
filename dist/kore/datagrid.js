@@ -37,10 +37,13 @@ function Datagrid(params) {
     const { primaryKey, columns, newRow, defaultSort, cacheSortWithId, pageSize, searchText } = params;
     let { page } = params;
     let data = [...params.data];
+    let selectedRow = params.selectedRow || (0, knockout_1.observable)(null);
     const [cellState] = (0, react_1.useState)(() => ({}));
     const [focusOnNewRow, setFocusOnNewRow] = (0, react_1.useState)(false);
     cellState.maxIRow = data.length - 1;
     cellState.maxICol = columns.length - 1;
+    // cellState.data = data;
+    // cellState.selectedRow = selectedRow;
     const _defaultSort = cacheSortWithId && ((_a = (0, exports.sortCache)()[cacheSortWithId]) === null || _a === void 0 ? void 0 : _a.length)
         ? (0, exports.sortCache)()[cacheSortWithId]
         : (defaultSort || '').split(',').reverse().filter(s => s);
@@ -165,7 +168,7 @@ function Datagrid(params) {
                                 "\u00A0 ",
                                 react_1.default.createElement("i", { className: "bi bi-sort-up" })));
                 }))),
-            react_1.default.createElement("tbody", null, data.map((rowData, iRow) => react_1.default.createElement(DataRow, { key: rowData[primaryKey.name] || Math.random(), rowData: rowData, columns: columns, primaryKey: primaryKey, iRow: iRow, cellState: cellState }))),
+            react_1.default.createElement("tbody", null, data.map((rowData, iRow) => react_1.default.createElement(DataRow, { key: rowData[primaryKey.name] || Math.random(), rowData: rowData, columns: columns, primaryKey: primaryKey, iRow: iRow, cellState: cellState, selectedRow: selectedRow }))),
             newRow &&
                 react_1.default.createElement("tfoot", null,
                     react_1.default.createElement("tr", null,
@@ -207,9 +210,12 @@ function format(data, column) {
     }
     return String(data);
 }
-const DataRow = react_1.default.memo(function ({ rowData, columns, primaryKey, iRow, cellState }) {
-    let [validationError] = (0, hooks_1.useObservable)(rowData.validationError);
-    return (react_1.default.createElement("tr", { key: rowData[primaryKey.name] || Math.random(), className: validationError ? 'table-danger' : '' }, columns.map((column, iCol) => {
+const DataRow = react_1.default.memo(function ({ rowData, columns, primaryKey, iRow, cellState, selectedRow }) {
+    const [validationError] = (0, hooks_1.useObservable)(rowData.validationError);
+    const [selectedRowValue] = (0, hooks_1.useObservable)(selectedRow);
+    return (react_1.default.createElement("tr", { key: rowData[primaryKey.name] || Math.random(), className: validationError ? 'table-danger' : '', onFocus: () => selectedRow(rowData), style: {
+            backgroundColor: selectedRowValue === rowData ? 'rgba(173, 216, 230, 0.51)' : ''
+        } }, columns.map((column, iCol) => {
         return (react_1.default.createElement("td", { key: column.name, style: styleCellTd(rowData, column), onKeyDown: evt => onCellKeyDown(evt, cellState, iRow, iCol) },
             react_1.default.createElement(DataCell, { doc: rowData, column: column, iCol: iCol, iRow: iRow, cellState: cellState })));
     })));
@@ -310,6 +316,7 @@ function getSelectedText(elem) {
 function focusOnCell(cellState, iRow, iCol, direction = 'next') {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j;
     const { maxIRow, maxICol, newRowBtn } = cellState;
+    // const { data, selectedRow } = cellState;
     if (direction === 'next') {
         while (iRow <= maxIRow) {
             while (iCol <= maxICol) {
@@ -317,6 +324,7 @@ function focusOnCell(cellState, iRow, iCol, direction = 'next') {
                 if (((_a = ref === null || ref === void 0 ? void 0 : ref.current) === null || _a === void 0 ? void 0 : _a.focus) && !((_b = ref === null || ref === void 0 ? void 0 : ref.current) === null || _b === void 0 ? void 0 : _b.disabled) /*TODO zIndex === -1*/) {
                     ref.current.focus();
                     (_d = (_c = ref.current).select) === null || _d === void 0 ? void 0 : _d.call(_c);
+                    // selectedRow(data[iRow]);
                     return;
                 }
                 iCol++;
@@ -332,6 +340,7 @@ function focusOnCell(cellState, iRow, iCol, direction = 'next') {
                 if (((_e = ref === null || ref === void 0 ? void 0 : ref.current) === null || _e === void 0 ? void 0 : _e.focus) && !((_f = ref === null || ref === void 0 ? void 0 : ref.current) === null || _f === void 0 ? void 0 : _f.disabled) /*TODO zIndex === -1*/) {
                     ref.current.focus();
                     (_h = (_g = ref.current).select) === null || _h === void 0 ? void 0 : _h.call(_g);
+                    // selectedRow(data[iRow]);
                     return;
                 }
                 iCol--;

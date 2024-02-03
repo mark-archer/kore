@@ -20,6 +20,7 @@ interface IParams<T> {
     page?: Observable<number>;
     pageSize?: Observable<number>;
     cacheSortWithId?: string;
+    selectedRow?: Observable<IDoc<T>>;
 }
 export declare const AutoColumnsExcludedNames: string[];
 export declare function Autogrid<T>(params: IParams<T>): JSX.Element;

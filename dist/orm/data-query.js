@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.dataFilterToSqlTextSearch = exports.dataFilterToSqlWhere = exports.dataQueryToSqlQuery = exports.DataQuery = void 0;
 const knockout_1 = require("knockout");
 const lodash_1 = require("lodash");
+const collection_1 = require("./collection");
 class DataQuery {
     constructor(collection, execQuery, filter) {
         this.collection = collection;
@@ -27,18 +28,54 @@ class DataQuery {
             return changeCount++;
         });
     }
-    get observableResults() {
+    clone() {
+        const dataQuery = new DataQuery(this.collection, this.execQuery);
+        dataQuery.page(this.page());
+        dataQuery.pageSize(this.pageSize());
+        dataQuery.sortBy(this.sortBy());
+        dataQuery.filter(Object.assign({}, this.filter()));
+        dataQuery.clientFilter(this.clientFilter());
+        dataQuery.textSearch(this.textSearch());
+        return dataQuery;
+    }
+    async getResults() {
+        let results = await this.execQuery(this);
+        if (this.clientFilter()) {
+            results = results.filter(this.clientFilter());
+        }
+        return results.map(r => this.collection.init(r));
+    }
+    get observablePage() {
         const obs = (0, knockout_1.observableArray)([]);
         this.changes.subscribe(() => this.getResults().then(results => obs(results)));
         return obs;
     }
-    async getResults() {
-        return await this.execQuery(this).then(results => {
-            if (this.clientFilter) {
-                results = results.filter(this.clientFilter);
-            }
-            return results.map(r => this.collection.init(r));
-        });
+    cursor() {
+        const dataQuery = this.clone();
+        let buffer = [];
+        let eof = false;
+        const cursor = {
+            value: null,
+            next: async () => {
+                if (eof) {
+                    return null;
+                }
+                if (!buffer.length) {
+                    buffer = await dataQuery.getResults();
+                    dataQuery.page(dataQuery.page() + 1);
+                }
+                if (buffer.length) {
+                    cursor.value = buffer.shift();
+                    return cursor.value;
+                }
+                else {
+                    eof = true;
+                    cursor.value = null;
+                    return null;
+                }
+            },
+        };
+        return (0, collection_1.iterableCursor)(cursor);
     }
 }
 exports.DataQuery = DataQuery;
