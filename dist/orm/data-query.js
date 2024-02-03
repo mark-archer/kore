@@ -46,8 +46,11 @@ class DataQuery {
         return results.map(r => this.collection.init(r));
     }
     get observablePage() {
+        // TODO dedup observablePage - all pages should be the same so should only return one
         const obs = (0, knockout_1.observableArray)([]);
+        // TODO debounce/dedup many consecutive changes
         this.changes.subscribe(() => this.getResults().then(results => obs(results)));
+        this.getResults().then(results => obs(results));
         return obs;
     }
     cursor() {

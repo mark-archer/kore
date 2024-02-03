@@ -232,7 +232,7 @@ describe('dataQueryToSqlQuery', () => {
       FETCH 10 ROWS
     `));
     });
-    it('should respond calculate OFFSET and FETCH from page and pageSize', () => {
+    it('should calculate OFFSET and FETCH from page and pageSize', () => {
         query.filter({});
         query.textSearch('');
         query.pageSize(10);
@@ -248,7 +248,7 @@ describe('dataQueryToSqlQuery', () => {
       FETCH 10 ROWS
     `));
     });
-    it('should respond calculate OFFSET and FETCH from page and pageSize', () => {
+    it('should calculate OFFSET and FETCH from page and pageSize', () => {
         query.filter({});
         query.textSearch('');
         query.pageSize(10);

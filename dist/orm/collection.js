@@ -41,6 +41,12 @@ class Collection {
                 const obsAry = (0, knockout_1.observableArray)([]);
                 this.search(text, limit, lastModified, group, direction).then(results => obsAry(results));
                 return obsAry;
+            },
+            query: (filter) => {
+                const query = this.query(filter);
+                const obsAry = (0, knockout_1.observableArray)([]);
+                query.getResults().then(results => obsAry(results));
+                return obsAry;
             }
         };
         exports.collections.push(this);

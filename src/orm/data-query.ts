@@ -53,8 +53,11 @@ export class DataQuery<T> {
   }
 
   public get observablePage(): ObservableArray<IDoc<T>> {
+    // TODO dedup observablePage - all pages should be the same so should only return one
     const obs = observableArray<IDoc<T>>([]);
+    // TODO debounce/dedup many consecutive changes
     this.changes.subscribe(() => this.getResults().then(results => obs(results)));
+    this.getResults().then(results => obs(results));
     return obs;
   }
 

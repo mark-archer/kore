@@ -57,5 +57,6 @@ export declare class Collection<T> {
         get: (id: string) => Observable<IDoc<T>>;
         list: (match?: IObjectMatch<T> | ((doc: T) => (boolean | Promise<boolean>)), limit?: number, lastModified?: number, group?: string, direction?: ICursorDirection) => ObservableArray<IDoc<T>>;
         search: (text: string, limit?: number, lastModified?: number, group?: string, direction?: ICursorDirection) => ObservableArray<IDoc<T>>;
+        query: (filter?: DataFilter<T>) => ObservableArray<IDoc<T>>;
     };
 }

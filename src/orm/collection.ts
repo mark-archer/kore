@@ -247,6 +247,12 @@ export class Collection<T> {
       const obsAry = observableArray<IDoc<T>>([]);
       this.search(text, limit, lastModified, group, direction).then(results => obsAry(results))
       return obsAry
+    },
+    query: (filter?: DataFilter<T>): ObservableArray<IDoc<T>> => {
+      const query = this.query(filter);
+      const obsAry = observableArray<IDoc<T>>([]);
+      query.getResults().then(results => obsAry(results));
+      return obsAry;
     }
   }
 }
