@@ -288,6 +288,7 @@ const DataRow: <T>(params: IDataRowParams<T>) => any =
       <tr key={rowData[primaryKey.name] || Math.random()}
         className={validationError ? 'table-danger' : ''}
         onFocus={() => selectedRow(rowData)}
+        onClick={() => selectedRow(rowData)}
         style={{ 
           backgroundColor: selectedRowValue === rowData ? 'rgba(173, 216, 230, 0.51)' : ''
         }}

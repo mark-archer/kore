@@ -213,7 +213,7 @@ function format(data, column) {
 const DataRow = react_1.default.memo(function ({ rowData, columns, primaryKey, iRow, cellState, selectedRow }) {
     const [validationError] = (0, hooks_1.useObservable)(rowData.validationError);
     const [selectedRowValue] = (0, hooks_1.useObservable)(selectedRow);
-    return (react_1.default.createElement("tr", { key: rowData[primaryKey.name] || Math.random(), className: validationError ? 'table-danger' : '', onFocus: () => selectedRow(rowData), style: {
+    return (react_1.default.createElement("tr", { key: rowData[primaryKey.name] || Math.random(), className: validationError ? 'table-danger' : '', onFocus: () => selectedRow(rowData), onClick: () => selectedRow(rowData), style: {
             backgroundColor: selectedRowValue === rowData ? 'rgba(173, 216, 230, 0.51)' : ''
         } }, columns.map((column, iCol) => {
         return (react_1.default.createElement("td", { key: column.name, style: styleCellTd(rowData, column), onKeyDown: evt => onCellKeyDown(evt, cellState, iRow, iCol) },
