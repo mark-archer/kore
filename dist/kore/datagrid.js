@@ -37,13 +37,11 @@ function Datagrid(params) {
     const { primaryKey, columns, newRow, defaultSort, cacheSortWithId, pageSize, searchText } = params;
     let { page } = params;
     let data = [...params.data];
-    let selectedRow = params.selectedRow || (0, knockout_1.observable)(null);
+    let selectedRow = params.selectedRow;
     const [cellState] = (0, react_1.useState)(() => ({}));
     const [focusOnNewRow, setFocusOnNewRow] = (0, react_1.useState)(false);
     cellState.maxIRow = data.length - 1;
     cellState.maxICol = columns.length - 1;
-    // cellState.data = data;
-    // cellState.selectedRow = selectedRow;
     const _defaultSort = cacheSortWithId && ((_a = (0, exports.sortCache)()[cacheSortWithId]) === null || _a === void 0 ? void 0 : _a.length)
         ? (0, exports.sortCache)()[cacheSortWithId]
         : (defaultSort || '').split(',').reverse().filter(s => s);
@@ -213,7 +211,7 @@ function format(data, column) {
 const DataRow = react_1.default.memo(function ({ rowData, columns, primaryKey, iRow, cellState, selectedRow }) {
     const [validationError] = (0, hooks_1.useObservable)(rowData.validationError);
     const [selectedRowValue] = (0, hooks_1.useObservable)(selectedRow);
-    return (react_1.default.createElement("tr", { key: rowData[primaryKey.name] || Math.random(), className: validationError ? 'table-danger' : '', onFocus: () => selectedRow(rowData), onClick: () => selectedRow(rowData), style: {
+    return (react_1.default.createElement("tr", { key: rowData[primaryKey.name] || Math.random(), className: validationError ? 'table-danger' : '', onFocus: () => selectedRow === null || selectedRow === void 0 ? void 0 : selectedRow(rowData), onClick: () => selectedRow === null || selectedRow === void 0 ? void 0 : selectedRow(rowData), style: {
             backgroundColor: selectedRowValue === rowData ? 'rgba(173, 216, 230, 0.51)' : ''
         } }, columns.map((column, iCol) => {
         return (react_1.default.createElement("td", { key: column.name, style: styleCellTd(rowData, column), onKeyDown: evt => onCellKeyDown(evt, cellState, iRow, iCol) },
@@ -316,7 +314,6 @@ function getSelectedText(elem) {
 function focusOnCell(cellState, iRow, iCol, direction = 'next') {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j;
     const { maxIRow, maxICol, newRowBtn } = cellState;
-    // const { data, selectedRow } = cellState;
     if (direction === 'next') {
         while (iRow <= maxIRow) {
             while (iCol <= maxICol) {
@@ -324,7 +321,6 @@ function focusOnCell(cellState, iRow, iCol, direction = 'next') {
                 if (((_a = ref === null || ref === void 0 ? void 0 : ref.current) === null || _a === void 0 ? void 0 : _a.focus) && !((_b = ref === null || ref === void 0 ? void 0 : ref.current) === null || _b === void 0 ? void 0 : _b.disabled) /*TODO zIndex === -1*/) {
                     ref.current.focus();
                     (_d = (_c = ref.current).select) === null || _d === void 0 ? void 0 : _d.call(_c);
-                    // selectedRow(data[iRow]);
                     return;
                 }
                 iCol++;
@@ -340,7 +336,6 @@ function focusOnCell(cellState, iRow, iCol, direction = 'next') {
                 if (((_e = ref === null || ref === void 0 ? void 0 : ref.current) === null || _e === void 0 ? void 0 : _e.focus) && !((_f = ref === null || ref === void 0 ? void 0 : ref.current) === null || _f === void 0 ? void 0 : _f.disabled) /*TODO zIndex === -1*/) {
                     ref.current.focus();
                     (_h = (_g = ref.current).select) === null || _h === void 0 ? void 0 : _h.call(_g);
-                    // selectedRow(data[iRow]);
                     return;
                 }
                 iCol--;

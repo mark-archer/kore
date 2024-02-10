@@ -41,14 +41,12 @@ export function Datagrid<T>(params: IDatagridParams<T>) {
   const { primaryKey, columns, newRow, defaultSort, cacheSortWithId, pageSize, searchText } = params;
   let { page } = params;
   let data = [...params.data];
-  let selectedRow = params.selectedRow || observable<IDoc<T>>(null);
+  let selectedRow = params.selectedRow;
 
   const [cellState]: any = useState(() => ({} as Record<string, any>));
   const [focusOnNewRow, setFocusOnNewRow] = useState(false);
   cellState.maxIRow = data.length - 1;
   cellState.maxICol = columns.length - 1;
-  // cellState.data = data;
-  // cellState.selectedRow = selectedRow;
 
   const _defaultSort = cacheSortWithId && sortCache()[cacheSortWithId]?.length
     ? sortCache()[cacheSortWithId]
@@ -277,7 +275,7 @@ interface IDataRowParams<T> {
   primaryKey: IDatagridField<T>
   iRow: number
   cellState: any
-  selectedRow: Observable<IDoc<T>>
+  selectedRow?: Observable<IDoc<T>>
 }
 
 const DataRow: <T>(params: IDataRowParams<T>) => any =
@@ -287,8 +285,8 @@ const DataRow: <T>(params: IDataRowParams<T>) => any =
     return (
       <tr key={rowData[primaryKey.name] || Math.random()}
         className={validationError ? 'table-danger' : ''}
-        onFocus={() => selectedRow(rowData)}
-        onClick={() => selectedRow(rowData)}
+        onFocus={() => selectedRow?.(rowData)}
+        onClick={() => selectedRow?.(rowData)}
         style={{ 
           backgroundColor: selectedRowValue === rowData ? 'rgba(173, 216, 230, 0.51)' : ''
         }}
@@ -439,7 +437,6 @@ function getSelectedText(elem) {
 
 function focusOnCell(cellState, iRow: number, iCol: number, direction: 'next' | 'prev' = 'next') {
   const { maxIRow, maxICol, newRowBtn } = cellState;
-  // const { data, selectedRow } = cellState;
   if (direction === 'next') {
     while (iRow <= maxIRow) {
       while (iCol <= maxICol) {
@@ -447,7 +444,6 @@ function focusOnCell(cellState, iRow: number, iCol: number, direction: 'next' | 
         if (ref?.current?.focus && !ref?.current?.disabled /*TODO zIndex === -1*/) {
           ref.current.focus();
           ref.current.select?.();
-          // selectedRow(data[iRow]);
           return;
         }
         iCol++;
@@ -462,7 +458,6 @@ function focusOnCell(cellState, iRow: number, iCol: number, direction: 'next' | 
         if (ref?.current?.focus && !ref?.current?.disabled /*TODO zIndex === -1*/) {
           ref.current.focus();
           ref.current.select?.();
-          // selectedRow(data[iRow]);
           return;
         }
         iCol--;
