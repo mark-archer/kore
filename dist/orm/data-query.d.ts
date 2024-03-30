@@ -17,20 +17,19 @@ export declare class DataQuery<T> {
     get observablePage(): ObservableArray<IDoc<T>>;
     cursor(): ICursorIterable<T>;
 }
-export declare function dataQueryToSqlQuery(dataQuery: DataQuery<any>): string;
-type SortBy<T> = (keyof T | `-${keyof T}`)[];
-type DataFieldScalar = boolean | number | string | Date | null;
-type DataFilterValueOperator = '$ne' | '$gt' | '$gte' | '$lt' | '$lte' | '$exists';
-type DataFilterValue = DataFieldScalar | DataFieldScalar[] | {
+export type SortBy<T> = (keyof T | `-${keyof T}`)[];
+export type DataFieldScalar = boolean | number | string | Date | null;
+export type DataFilterValueOperator = '$ne' | '$gt' | '$gte' | '$lt' | '$lte' | '$exists';
+export type DataFilterValue = DataFieldScalar | DataFieldScalar[] | {
     [key in DataFilterValueOperator]?: DataFieldScalar;
 } | {
     $nin: DataFieldScalar[];
 };
-type DataFilterAnd<T> = {
+export type DataFilterAnd<T> = {
     [key in keyof T]?: DataFilterValue;
 };
-type DataFilterOr<T> = DataFilterAnd<T>[];
+export type DataFilterOr<T> = DataFilterAnd<T>[];
 export type DataFilter<T> = DataFilterAnd<T> | DataFilterOr<T>;
+export declare function dataQueryToSqlQuery(dataQuery: DataQuery<any>): string;
 export declare function dataFilterToSqlWhere(filter: DataFilter<any>): string;
 export declare function dataFilterToSqlTextSearch(query: DataQuery<any>): string;
-export {};

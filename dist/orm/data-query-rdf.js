@@ -1,88 +1,23 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.dataFilterToSqlTextSearch = exports.dataFilterToSqlWhere = exports.dataQueryToSqlQuery = exports.DataQuery = void 0;
-const knockout_1 = require("knockout");
+exports.dataFilterToSqlTextSearch = exports.dataFilterToSqlWhere = exports.dataQueryToRdfQuery = exports.rdfEntityToSqlColumns = void 0;
 const lodash_1 = require("lodash");
-const collection_1 = require("./collection");
-class DataQuery {
-    constructor(collection, execQuery, filter) {
-        this.collection = collection;
-        this.execQuery = execQuery;
-        this.page = (0, knockout_1.observable)(1);
-        this.pageSize = (0, knockout_1.observable)(30);
-        this.sortBy = (0, knockout_1.observable)([]);
-        this.filter = (0, knockout_1.observable)({});
-        this.clientFilter = (0, knockout_1.observable)(null);
-        this.textSearch = (0, knockout_1.observable)('');
-        if (filter) {
-            this.filter(filter);
-        }
-        let changeCount = 0;
-        this.changes = (0, knockout_1.computed)(() => {
-            this.page();
-            this.pageSize();
-            this.sortBy();
-            this.filter();
-            this.clientFilter();
-            this.textSearch();
-            return changeCount++;
-        });
-    }
-    clone() {
-        const dataQuery = new DataQuery(this.collection, this.execQuery);
-        dataQuery.page(this.page());
-        dataQuery.pageSize(this.pageSize());
-        dataQuery.sortBy(this.sortBy());
-        dataQuery.filter(Object.assign({}, this.filter()));
-        dataQuery.clientFilter(this.clientFilter());
-        dataQuery.textSearch(this.textSearch());
-        return dataQuery;
-    }
-    async getResults() {
-        let results = await this.execQuery(this);
-        if (this.clientFilter()) {
-            results = results.filter(this.clientFilter());
-        }
-        return results.map(r => this.collection.init(r));
-    }
-    get observablePage() {
-        // TODO dedup observablePage - all pages should be the same so should only return one
-        const obs = (0, knockout_1.observableArray)([]);
-        // TODO debounce/dedup many consecutive changes
-        this.changes.subscribe(() => this.getResults().then(results => obs(results)));
-        this.getResults().then(results => obs(results));
-        return obs;
-    }
-    cursor() {
-        const dataQuery = this.clone();
-        let buffer = [];
-        let eof = false;
-        const cursor = {
-            value: null,
-            next: async () => {
-                if (eof) {
-                    return null;
-                }
-                if (!buffer.length) {
-                    buffer = await dataQuery.getResults();
-                    dataQuery.page(dataQuery.page() + 1);
-                }
-                if (buffer.length) {
-                    cursor.value = buffer.shift();
-                    return cursor.value;
-                }
-                else {
-                    eof = true;
-                    cursor.value = null;
-                    return null;
-                }
-            },
-        };
-        return (0, collection_1.iterableCursor)(cursor);
-    }
+function rdfEntityToSqlColumns(entity) {
+    var _a;
+    let sqlColumns = `subject as [${((_a = entity.primaryKey) === null || _a === void 0 ? void 0 : _a.name) || 'id'}]`;
+    const addCols = entity.fields
+        .filter(f => { var _a; return f.name !== (((_a = entity.primaryKey) === null || _a === void 0 ? void 0 : _a.name) || 'id'); })
+        .map(f => {
+        // TODO escape quotes in names
+        return `MAX(CASE predicate WHEN '${f.name}' THEN value END) as [${f.name}]`;
+    });
+    return [
+        sqlColumns,
+        ...addCols
+    ].join(',\n');
 }
-exports.DataQuery = DataQuery;
-function dataQueryToSqlQuery(dataQuery) {
+exports.rdfEntityToSqlColumns = rdfEntityToSqlColumns;
+function dataQueryToRdfQuery(entity, dataQuery) {
     var _a;
     let orderBy = "1";
     if (dataQuery.sortBy().length) {
@@ -119,7 +54,7 @@ function dataQueryToSqlQuery(dataQuery) {
         .replace(/    /g, '');
     return sql;
 }
-exports.dataQueryToSqlQuery = dataQueryToSqlQuery;
+exports.dataQueryToRdfQuery = dataQueryToRdfQuery;
 function dataFilterToSqlWhere(filter) {
     if ((0, lodash_1.isArray)(filter)) {
         const orStatement = filter.map(f => dataFilterToSqlWhere(f)).join(' OR ');
@@ -210,4 +145,4 @@ function dataFilterToSqlTextSearch(query) {
     return `(${strFilter})`;
 }
 exports.dataFilterToSqlTextSearch = dataFilterToSqlTextSearch;
-//# sourceMappingURL=data-query.js.map
+//# sourceMappingURL=data-query-rdf.js.map

@@ -80,7 +80,7 @@ function TypeaheadFK(props) {
     const displayField = (doc) => {
         var _a, _b;
         const displayValue = (_a = doc === null || doc === void 0 ? void 0 : doc.displayValue) === null || _a === void 0 ? void 0 : _a.call(doc);
-        if ((_b = props.dataGridColumn) === null || _b === void 0 ? void 0 : _b.name) {
+        if (doc && ((_b = props.dataGridColumn) === null || _b === void 0 ? void 0 : _b.name)) {
             const value = displayValue;
             // const value = doc?.sortOrder ?? displayValue;
             fkColumnValueCache[`${props.dataGridColumn.name}-${doc.primaryKey()}`] = value;

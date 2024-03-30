@@ -76,7 +76,7 @@ export function TypeaheadFK<T>(props: IProps<T>) {
 
   const displayField = (doc: IDoc<any>) => {
     const displayValue = doc?.displayValue?.();
-    if (props.dataGridColumn?.name) {
+    if (doc && props.dataGridColumn?.name) {
       const value = displayValue;
       // const value = doc?.sortOrder ?? displayValue;
       fkColumnValueCache[`${props.dataGridColumn.name}-${doc.primaryKey()}`] = value;
