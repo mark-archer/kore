@@ -89,6 +89,29 @@ export class DataQuery<T> {
   }
 }
 
+// @ts-ignore
+export type SortBy<T> = (keyof T | `-${keyof T}`)[];
+
+export type DataFieldScalar = boolean | number | string | Date | null;
+
+// export type DataFilterListOperator = '$in' | '$nin';
+export type DataFilterValueOperator = '$ne' | '$gt' | '$gte' | '$lt' | '$lte' | '$exists';
+
+export type DataFilterValue =
+  DataFieldScalar |
+  DataFieldScalar[] |
+  // DataFilterList | 
+  { [key in DataFilterValueOperator]?: DataFieldScalar } |
+  { $nin: DataFieldScalar[] };
+
+export type DataFilterAnd<T> = {
+  [key in keyof T]?: DataFilterValue
+}
+
+export type DataFilterOr<T> = DataFilterAnd<T>[];
+
+export type DataFilter<T> = DataFilterAnd<T> | DataFilterOr<T>;
+
 export function dataQueryToSqlQuery(dataQuery: DataQuery<any>): string {
   let orderBy = "1";
   if (dataQuery.sortBy().length) {
@@ -123,34 +146,6 @@ export function dataQueryToSqlQuery(dataQuery: DataQuery<any>): string {
     .replace(/    /g, '');
   return sql;
 }
-
-
-function dataQueryToMongoQuery() {
-  throw new Error('not implemented');
-}
-
-// @ts-ignore
-type SortBy<T> = (keyof T | `-${keyof T}`)[];
-
-type DataFieldScalar = boolean | number | string | Date | null;
-
-// export type DataFilterListOperator = '$in' | '$nin';
-type DataFilterValueOperator = '$ne' | '$gt' | '$gte' | '$lt' | '$lte' | '$exists';
-
-type DataFilterValue =
-  DataFieldScalar |
-  DataFieldScalar[] |
-  // DataFilterList | 
-  { [key in DataFilterValueOperator]?: DataFieldScalar } |
-  { $nin: DataFieldScalar[] };
-
-type DataFilterAnd<T> = {
-  [key in keyof T]?: DataFilterValue
-}
-
-type DataFilterOr<T> = DataFilterAnd<T>[];
-
-export type DataFilter<T> = DataFilterAnd<T> | DataFilterOr<T>;
 
 export function dataFilterToSqlWhere(filter: DataFilter<any>): string {
   if (isArray(filter)) {
@@ -233,5 +228,4 @@ export function dataFilterToSqlTextSearch(query: DataQuery<any>): string {
     return `[${name}] LIKE '%${textSearch.replace(/'/g, "''")}%'`;
   }).join(' OR ');
   return `(${strFilter})`;
-
 }
