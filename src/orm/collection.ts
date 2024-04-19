@@ -192,7 +192,8 @@ export class Collection<T> {
   // automatically searches all columns for containing text
   async search(text: string, limit?: number, lastModified?: number, group?: string, direction?: ICursorDirection): Promise<IDoc<T>[]> {
     function matchAnyText(doc: T) {
-      if (JSON.stringify(doc).toLowerCase().includes(text)) {
+      const _text = text.toLowerCase();
+      if (JSON.stringify(doc).toLowerCase().includes(_text)) {
         return true;
       }
       return false;
