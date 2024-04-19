@@ -154,7 +154,8 @@ class Collection {
     // automatically searches all columns for containing text
     async search(text, limit, lastModified, group, direction) {
         function matchAnyText(doc) {
-            if (JSON.stringify(doc).toLowerCase().includes(text)) {
+            const _text = text.toLowerCase();
+            if (JSON.stringify(doc).toLowerCase().includes(_text)) {
                 return true;
             }
             return false;
