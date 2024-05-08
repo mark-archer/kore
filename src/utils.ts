@@ -76,7 +76,8 @@ export function js(jsCode: string, externalReferences?: any) {
 }
 
 // must be done this way so TypeScript doesn't rewrite async keyword
-export const AsyncFunction = eval('Object.getPrototypeOf(async function () { }).constructor');
+// export const AsyncFunction = eval('Object.getPrototypeOf(async function () { }).constructor');
+export const AsyncFunction = Object.getPrototypeOf(async function() {}).constructor;
 
 export function jsAsync(jsCode: string, externalReferences: any = {}) {
   jsCode = String(jsCode).trim()

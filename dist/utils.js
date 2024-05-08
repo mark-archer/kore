@@ -79,7 +79,8 @@ function js(jsCode, externalReferences) {
 }
 exports.js = js;
 // must be done this way so TypeScript doesn't rewrite async keyword
-exports.AsyncFunction = eval('Object.getPrototypeOf(async function () { }).constructor');
+// export const AsyncFunction = eval('Object.getPrototypeOf(async function () { }).constructor');
+exports.AsyncFunction = Object.getPrototypeOf(async function () { }).constructor;
 function jsAsync(jsCode, externalReferences = {}) {
     jsCode = String(jsCode).trim();
     const hideGlobals = [
