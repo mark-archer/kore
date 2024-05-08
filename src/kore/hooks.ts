@@ -1,6 +1,6 @@
 
 import { isSubscribable, observable, observableArray, Subscribable, unwrap } from 'knockout';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { isArray, isEqual } from 'lodash';
 import { fromJSON, toJSON } from '../utils';
 
@@ -37,7 +37,7 @@ export function useObservable<T>(sub: Subscribable<T> | T, deps: React.Dependenc
   }];
 }
 
-export function usePromise<T>(p: Promise<T> | (() => Promise<T>), initialValue?: T, deps: React.DependencyList = []): T {
+export function usePromise<T>(p: Promise<T> | (() => Promise<T>), initialValue?: T, deps: React.DependencyList = []): T | undefined {
   const [data, setData] = useState(initialValue);
   useEffect(() => {
     let disposed = false;
@@ -64,7 +64,7 @@ export function useObservableState<T>(initialValue?: T) {
 }
 
 export function useObservableArrayState<T=any>(initialValue?: T[]) {
-  const [obs] = useState(() => observableArray(initialValue));
+  const [obs] = useState(() => observableArray(initialValue ?? []));
   useObservable(obs);
   return obs;
 }
@@ -78,7 +78,7 @@ export function useSubscription<T>(subscribable: Subscribable<T>, onChange: (val
   }, [subscribable, onChange]);
 }
 
-export function useOnScreen(ref) {
+export function useOnScreen(ref: React.RefObject<any>) {
   const [isIntersecting, setIntersecting] = useState(false)
 
   const observer = new IntersectionObserver(
@@ -94,7 +94,7 @@ export function useOnScreen(ref) {
   return isIntersecting
 }
 
-export function persistentValue<T>(initialValue: T, globalName: string): ko.Observable<T> {
+export function persistentValue<T>(initialValue: T, globalName: string): ko.Observable<T | undefined> {
   let q = observable<T>();
   if (typeof localStorage === 'undefined') {
     return q;

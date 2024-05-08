@@ -65,7 +65,7 @@ function useObservableState(initialValue) {
 }
 exports.useObservableState = useObservableState;
 function useObservableArrayState(initialValue) {
-    const [obs] = (0, react_1.useState)(() => (0, knockout_1.observableArray)(initialValue));
+    const [obs] = (0, react_1.useState)(() => (0, knockout_1.observableArray)(initialValue !== null && initialValue !== void 0 ? initialValue : []));
     useObservable(obs);
     return obs;
 }
