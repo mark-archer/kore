@@ -5,7 +5,7 @@ interface IProps<T> {
     filterItems?: (existingItems: T[]) => T[];
     renderItem: (props: {
         item: T;
-        taskListId: string;
+        listId: string;
         sortHandle: string;
     }) => React.ReactNode;
     listsGroup?: string;

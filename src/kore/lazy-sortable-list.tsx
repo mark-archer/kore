@@ -5,7 +5,7 @@ import { ISortable, SortableList } from './sortable-list';
 interface IProps<T> {
   loadMore: (existingItems: T[]) => Promise<T[]>
   filterItems?: (existingItems: T[]) => T[]
-  renderItem: (props: { item: T, taskListId: string, sortHandle: string }) => React.ReactNode,
+  renderItem: (props: { item: T, listId: string, sortHandle: string }) => React.ReactNode,
   listsGroup?: string
   onAdd?: ((itemId: string, sortOrder: number) => any),
   onUpdate?: ((args: { items: T[], ixMoved: number[] }) => any),

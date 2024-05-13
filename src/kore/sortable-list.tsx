@@ -10,7 +10,7 @@ export interface ISortable {
 
 interface ISortableListProps<T extends ISortable> {
   items: MaybeSubscribable<T[]>,
-  renderItem: (props: { item: T, taskListId: string, sortHandle: string }) => React.ReactNode,
+  renderItem: (props: { item: T, listId: string, sortHandle: string }) => React.ReactNode,
   listsGroup?: string
   onAdd?: ((itemId: string, sortOrder: number) => any),
   onUpdate?: ((args: { items: T[], ixMoved: number[] }) => any),
@@ -57,7 +57,6 @@ export class SortableList<T extends ISortable> extends React.Component<ISortable
       animation: 100,
 
       onUpdate: evt => {
-        console.log(evt)
         const items = self.items;
         const item = items.splice(evt.oldIndex, 1)[0];
         item.sortOrder = this.calculateSortOrder(evt.newIndex);
@@ -69,11 +68,11 @@ export class SortableList<T extends ISortable> extends React.Component<ISortable
       },
 
       onAdd: evt => {
-        const taskEl = evt.item;  // dragged HTMLElement
+        const itemEl = evt.item;  // dragged HTMLElement
         if (evt.to !== evt.from) {
           // first restore html hierarchy so html doesn't get out of sync with react
-          evt.to.removeChild(taskEl);
-          evt.from.appendChild(taskEl);
+          evt.to.removeChild(itemEl);
+          evt.from.appendChild(itemEl);
 
           // now if we were given an `onAdd` function, call it
           if (this.props.onAdd) {
@@ -95,7 +94,7 @@ export class SortableList<T extends ISortable> extends React.Component<ISortable
     this.items = items;
     return (
       <div id={this.listId} style={{ minHeight: this.props.minHeight ?? "25px", paddingBottom: this.props.paddingBottom ?? "10px" }} {...this.props.containerProps} >
-        {items.map(item => this.props.renderItem({ item, taskListId: this.listId, sortHandle: this.sortHandle.substring(1) }))}
+        {items.map(item => this.props.renderItem({ item, listId: this.listId, sortHandle: this.sortHandle.substring(1) }))}
       </div>
     )
   }

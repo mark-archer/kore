@@ -7,7 +7,7 @@ interface ISortableListProps<T extends ISortable> {
     items: MaybeSubscribable<T[]>;
     renderItem: (props: {
         item: T;
-        taskListId: string;
+        listId: string;
         sortHandle: string;
     }) => React.ReactNode;
     listsGroup?: string;

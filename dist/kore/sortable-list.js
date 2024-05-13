@@ -36,7 +36,6 @@ class SortableList extends react_1.default.Component {
             group: { name: this.props.listsGroup || this.listId, put: !!this.props.onAdd },
             animation: 100,
             onUpdate: evt => {
-                console.log(evt);
                 const items = self.items;
                 const item = items.splice(evt.oldIndex, 1)[0];
                 item.sortOrder = this.calculateSortOrder(evt.newIndex);
@@ -47,11 +46,11 @@ class SortableList extends react_1.default.Component {
                 }
             },
             onAdd: evt => {
-                const taskEl = evt.item; // dragged HTMLElement
+                const itemEl = evt.item; // dragged HTMLElement
                 if (evt.to !== evt.from) {
                     // first restore html hierarchy so html doesn't get out of sync with react
-                    evt.to.removeChild(taskEl);
-                    evt.from.appendChild(taskEl);
+                    evt.to.removeChild(itemEl);
+                    evt.from.appendChild(itemEl);
                     // now if we were given an `onAdd` function, call it
                     if (this.props.onAdd) {
                         const itemId = evt.item.id;
@@ -71,7 +70,7 @@ class SortableList extends react_1.default.Component {
             items = (0, lodash_1.sortBy)(items, i => { var _a; return (_a = -i.sortOrder) !== null && _a !== void 0 ? _a : Infinity; });
         }
         this.items = items;
-        return (react_1.default.createElement("div", Object.assign({ id: this.listId, style: { minHeight: (_a = this.props.minHeight) !== null && _a !== void 0 ? _a : "25px", paddingBottom: (_b = this.props.paddingBottom) !== null && _b !== void 0 ? _b : "10px" } }, this.props.containerProps), items.map(item => this.props.renderItem({ item, taskListId: this.listId, sortHandle: this.sortHandle.substring(1) }))));
+        return (react_1.default.createElement("div", Object.assign({ id: this.listId, style: { minHeight: (_a = this.props.minHeight) !== null && _a !== void 0 ? _a : "25px", paddingBottom: (_b = this.props.paddingBottom) !== null && _b !== void 0 ? _b : "10px" } }, this.props.containerProps), items.map(item => this.props.renderItem({ item, listId: this.listId, sortHandle: this.sortHandle.substring(1) }))));
     }
 }
 exports.SortableList = SortableList;
