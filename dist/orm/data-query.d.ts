@@ -17,7 +17,8 @@ export declare class DataQuery<T> {
     get observablePage(): ObservableArray<IDoc<T>>;
     cursor(): ICursorIterable<T>;
 }
-export type SortBy<T> = (keyof T | `-${keyof T}`)[];
+type StringKeyOf<T> = Extract<keyof T, string>;
+export type SortBy<T> = (StringKeyOf<T> | `-${StringKeyOf<T>}`)[];
 export type DataFieldScalar = boolean | number | string | Date | null;
 export type DataFilterValueOperator = '$ne' | '$gt' | '$gte' | '$lt' | '$lte' | '$exists';
 export type DataFilterValue = DataFieldScalar | DataFieldScalar[] | {
@@ -33,3 +34,4 @@ export type DataFilter<T> = DataFilterAnd<T> | DataFilterOr<T>;
 export declare function dataQueryToSqlQuery(dataQuery: DataQuery<any>): string;
 export declare function dataFilterToSqlWhere(filter: DataFilter<any>): string;
 export declare function dataFilterToSqlTextSearch(query: DataQuery<any>): string;
+export {};

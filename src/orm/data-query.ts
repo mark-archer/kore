@@ -89,8 +89,9 @@ export class DataQuery<T> {
   }
 }
 
-// @ts-ignore
-export type SortBy<T> = (keyof T | `-${keyof T}`)[];
+type StringKeyOf<T> = Extract<keyof T, string>;
+
+export type SortBy<T> = (StringKeyOf<T> | `-${StringKeyOf<T>}`)[];
 
 export type DataFieldScalar = boolean | number | string | Date | null;
 
