@@ -9,7 +9,7 @@ const hooks_1 = require("./hooks");
 function Input(props) {
     var _a;
     const [value, setValue] = (0, hooks_1.useObservable)(props.value);
-    let type = (_a = props.type) !== null && _a !== void 0 ? _a : (typeof value);
+    const type = (_a = props.type) !== null && _a !== void 0 ? _a : (typeof value);
     function onChange(evt) {
         let _value = evt.target.value;
         if (type === 'number') {
@@ -17,7 +17,6 @@ function Input(props) {
         }
         setValue(_value);
     }
-    // TODO deal with 'checked` property in addition to 'value'
     return (react_1.default.createElement("input", Object.assign({ onChange: onChange, type: type }, props, { value: value })));
 }
 exports.Input = Input;
