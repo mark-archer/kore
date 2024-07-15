@@ -3,6 +3,7 @@ export * from "./kore/autoscreen-grid";
 export * from "./kore/datagrid";
 export * from "./kore/input-number";
 export * from "./kore/input";
+export * from "./kore/checkbox";
 export * from "./kore/lazy-list";
 export * from "./kore/lazy-sortable-list";
 export * from "./kore/sortable-list";

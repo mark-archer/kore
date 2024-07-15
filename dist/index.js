@@ -32,6 +32,7 @@ __exportStar(require("./kore/autoscreen-grid"), exports);
 __exportStar(require("./kore/datagrid"), exports);
 __exportStar(require("./kore/input-number"), exports);
 __exportStar(require("./kore/input"), exports);
+__exportStar(require("./kore/checkbox"), exports);
 __exportStar(require("./kore/lazy-list"), exports);
 __exportStar(require("./kore/lazy-sortable-list"), exports);
 __exportStar(require("./kore/sortable-list"), exports);
